@@ -820,7 +820,15 @@ async function enviarWhatsApp() {
   const servicio = cobroServicio || 0;
   const ganancia = subtotal - costo;
   const total    = subtotal + servicio;
-  const pedidoId = 'PED-' + String(Math.floor(Math.random()*9000)+1000);
+  // Generar ID doble igual que el admin
+  const _hoy = new Date();
+  const _fecha = _hoy.getFullYear().toString().slice(2) +
+    String(_hoy.getMonth()+1).padStart(2,'0') +
+    String(_hoy.getDate()).padStart(2,'0');
+  const _chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const _code  = Array.from({length:4},()=>_chars[Math.floor(Math.random()*_chars.length)]).join('');
+  const pedidoId      = 'PED-'+_fecha+'-'+_code;
+  const pedidoInterno = null; // el correlativo lo maneja el admin
   const ahora    = new Date();
 
   const msg    = construirMensaje(nombre, telefono, dir, notas, pedidoId, ahora);
@@ -828,7 +836,7 @@ async function enviarWhatsApp() {
   window.open(`https://wa.me/${numWA}?text=${encodeURIComponent(msg)}`, '_blank');
 
   const nuevoPedido = {
-    id: pedidoId, clienteId: '', cliente: nombre, telefono,
+    id: pedidoId, idInterno: pedidoInterno, clienteId: '', cliente: nombre, telefono,
     items, total, costo, ganancia, servicio, costoDespacho: 0,
     estado: 'pendiente', pago: '', entrega: tipoEntrega,
     direccion: dir, fecha: Date.now(), notas
