@@ -361,6 +361,7 @@ select.filter-select{padding:9px 12px;border:1px solid var(--border);border-radi
     </div>
   </div>
   <div class="stats" id="stats-pedidos"></div>
+  <div id="respaldo-pedidos-info"></div>
   <div class="search-bar">
     <input class="search-input" placeholder="Buscar por cliente, teléfono o #pedido…" id="search-pedidos" oninput="renderPedidos()">
     <select class="filter-select" id="filter-estado" onchange="renderPedidos()">
@@ -471,6 +472,7 @@ select.filter-select{padding:9px 12px;border:1px solid var(--border);border-radi
     </div>
     <div id="lista-cumpleanos" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
+  <div id="respaldo-clientes-info"></div>
 
   <!-- Filtros y selección -->
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
@@ -994,6 +996,27 @@ select.filter-select{padding:9px 12px;border:1px solid var(--border);border-radi
         </div>
       </div>
 
+      <!-- Tipo de entrega -->
+      <div class="form-group" style="margin-top:14px">
+        <label class="form-label">Tipo de entrega</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="entrega-opt" id="edit-opt-llevar" onclick="editarSelectEntrega('llevar')">
+            <div class="entrega-opt-icon">🏪</div>
+            <div class="entrega-opt-label">Retiro en tienda</div>
+          </div>
+          <div class="entrega-opt" id="edit-opt-despacho" onclick="editarSelectEntrega('despacho')">
+            <div class="entrega-opt-icon">🚚</div>
+            <div class="entrega-opt-label">Despacho</div>
+          </div>
+        </div>
+      </div>
+      <div id="edit-campo-direccion" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Dirección de despacho</label>
+          <input class="form-input" id="edit-direccion" placeholder="Calle, número, ciudad">
+        </div>
+      </div>
+
       <!-- Notas -->
       <div class="form-group" style="margin-top:14px">
         <label class="form-label">Notas del pedido</label>
@@ -1261,8 +1284,7 @@ select.filter-select{padding:9px 12px;border:1px solid var(--border);border-radi
     </div>
     <div class="modal-footer" style="flex-wrap:wrap;gap:8px">
       <button class="btn btn-ghost" onclick="cerrarModal('modal-anular')">Cancelar</button>
-      <button class="btn btn-ghost" style="color:var(--accent);border-color:var(--accent)" onclick="confirmarAnular(false,true)">❌ Anular + archivar</button>
-      <button class="btn btn-green" onclick="confirmarAnular(true,false)">📲 Anular + avisar cliente</button>
+      <button class="btn btn-danger" style="background:#A32D2D;color:#fff;border:none" onclick="confirmarAnularCompleto()">❌ Anular + WhatsApp + archivar</button>
     </div>
   </div>
 </div>
@@ -1384,6 +1406,7 @@ const _sb = (SUPABASE_URL !== 'TU_URL_AQUI')
 
 let _syncTimer  = null;
 let _syncStatus = 'idle';
+let _pullDone   = false;   // ← guard: no push hasta que el primer pull termine
 
 // ─── PERSISTENCIA ────────────────────────────────────────
 function save() {
@@ -1410,6 +1433,12 @@ function load() {
 // ── push: enviar estado a Supabase ────────────────────────
 async function _push() {
   if (!_sb) return;
+  if (!_pullDone) {
+    // Primer pull aún no terminó — reprogramar en 2 s en vez de descartar
+    clearTimeout(_syncTimer);
+    _syncTimer = setTimeout(_push, 2000);
+    return;
+  }
   _setSyncStatus('syncing');
   try {
     const { error } = await _sb.from('app_data').upsert(
@@ -1436,7 +1465,7 @@ async function _pull(showToastOnUpdate = false) {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) { _setSyncStatus('ok'); return; }
+    if (!data) { _pullDone = true; _setSyncStatus('ok'); return; }
 
     const localTs  = parseInt(localStorage.getItem('mt_state_ts') || '0');
     const remoteTs = new Date(data.updated_at).getTime();
@@ -1452,9 +1481,11 @@ async function _pull(showToastOnUpdate = false) {
       if (showToastOnUpdate)
         showToast('✅ Datos sincronizados desde la nube', 'success');
     }
+    _pullDone = true;   // ← pull completado: ya es seguro hacer push
     _setSyncStatus('ok');
   } catch(e) {
     console.warn('[Supabase] Error al sincronizar:', e.message);
+    _pullDone = true;   // ← aunque falle, desbloquear (modo offline)
     _setSyncStatus('error');
   }
 }
@@ -1591,22 +1622,47 @@ function renderPedidos(){
     return match&&(!est||p.estado===est)&&(!ent||p.entrega===ent);
   }).sort((a,b)=>b.fecha-a.fecha);
 
+  // Stats: excluir anulados
+  const pedActivos=state.pedidos.filter(p=>p.estado!=='anulado');
   const cnt={pendiente:0,confirmado:0,entregado:0,pagado:0};
-  state.pedidos.forEach(p=>cnt[p.estado]=(cnt[p.estado]||0)+1);
+  pedActivos.forEach(p=>cnt[p.estado]=(cnt[p.estado]||0)+1);
   document.getElementById('badge-pedidos').textContent=cnt.pendiente||0;
 
   document.getElementById('stats-pedidos').innerHTML=`
     <div class="stat accent"><div class="stat-label">Pendientes</div><div class="stat-value">${cnt.pendiente||0}</div><div class="stat-sub">Por gestionar</div></div>
     <div class="stat"><div class="stat-label">Confirmados</div><div class="stat-value">${cnt.confirmado||0}</div><div class="stat-sub">En proceso</div></div>
     <div class="stat"><div class="stat-label">Entregados</div><div class="stat-value">${cnt.entregado||0}</div><div class="stat-sub">Por cobrar</div></div>
-    <div class="stat"><div class="stat-label">Total historial</div><div class="stat-value">${state.pedidos.length}</div><div class="stat-sub">Todos los pedidos</div></div>`;
+    <div class="stat"><div class="stat-label">Total activos</div><div class="stat-value">${pedActivos.length}</div><div class="stat-sub">Sin anulados</div></div>`;
+
+  // Fecha último respaldo
+  const ultimaExpPed=parseInt(localStorage.getItem('mp_ultima_exportacion_pedidos')||'0');
+  const respaldoEl=document.getElementById('respaldo-pedidos-info');
+  if(respaldoEl){
+    respaldoEl.innerHTML=ultimaExpPed
+      ?`<div style="font-size:12px;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:6px">💾 Último respaldo Pedidos: <strong style="color:var(--text2)">${new Date(ultimaExpPed).toLocaleDateString('es-CL')} a las ${new Date(ultimaExpPed).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',hour12:false})}</strong></div>`
+      :`<div style="font-size:12px;color:#A32D2D;margin-bottom:12px;">⚠️ Nunca se ha exportado el Excel de pedidos</div>`;
+  }
 
   if(!list.length){
     document.getElementById('pedidos-list').innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Sin pedidos</div><div class="empty-sub">Los pedidos de tus clientes aparecerán aquí</div></div>`;return;
   }
   const eCls={pendiente:'estado-pendiente',confirmado:'estado-confirmado',entregado:'estado-entregado',pagado:'estado-pagado',anulado:'estado-anulado'};
   const eLbl={pendiente:'● Pendiente',confirmado:'● Confirmado',entregado:'● Entregado',pagado:'● Pagado',anulado:'❌ Anulado'};
-  document.getElementById('pedidos-list').innerHTML=list.map(p=>`
+  document.getElementById('pedidos-list').innerHTML=list.map(p=>{
+    // Desglose financiero
+    const costoTotal=p.costo||p.items.reduce((s,i)=>s+(i.costo||0)*i.qty,0);
+    const ganancia=p.total-costoTotal;
+    const despacho=p.costoDespacho||0;
+    const servicio=p.servicio||state.cobroServicio||0;
+    const desgloseHtml=`
+      <div style="background:var(--surface2);border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;gap:16px;flex-wrap:wrap;font-size:12px">
+        <span>💰 Ingresos: <strong style="color:var(--green)">${fmt(p.total)}</strong></span>
+        <span>📉 Costos: <strong style="color:#A32D2D">${fmt(costoTotal)}</strong></span>
+        <span>✨ Ganancia: <strong style="color:${ganancia>=0?'var(--green)':'#A32D2D'}">${fmt(ganancia)}</strong></span>
+        ${p.entrega==='despacho'?`<span>🚚 Despacho: <strong style="color:var(--blue)">${despacho>0?fmt(despacho):'Gratuito'}</strong></span>`:''}
+        ${servicio>0?`<span>🔧 Servicio: <strong>${fmt(servicio)}</strong></span>`:''}
+      </div>`;
+    return `
     <div class="pedido-card">
       <div class="pedido-header">
         <div>
@@ -1622,6 +1678,7 @@ function renderPedidos(){
               ${p.entrega==='llevar'?'🏪 Retiro en tienda':'🚚 Despacho'}
             </span>
             ${p.entrega==='despacho'&&p.direccion?`<span class="info-pill">📍 ${p.direccion}</span>`:''}
+            ${p.motivoAnulacion?`<span class="info-pill" style="color:#A32D2D;background:#FCEBEB">❌ ${p.motivoAnulacion}</span>`:''}
           </div>
         </div>
         <span class="estado-badge ${eCls[p.estado]}">${eLbl[p.estado]}</span>
@@ -1630,6 +1687,7 @@ function renderPedidos(){
         ${p.items.map(i=>`${i.qty}× ${i.nombre}`).join(' &nbsp;·&nbsp; ')}
         ${p.notas?`<br><span style="color:var(--text3);font-size:12px">📝 ${p.notas}</span>`:''}
       </div>
+      ${desgloseHtml}
       <div class="pedido-footer">
         <div class="pedido-total">${fmt(p.total)}</div>
         <div class="pedido-actions">
@@ -1640,7 +1698,7 @@ function renderPedidos(){
           ${p.estado!=='anulado'?`<button class="btn btn-danger btn-sm" onclick="abrirAnularPedido('${p.id}')">❌ Anular</button>`:''}
         </div>
       </div>
-    </div>`).join('');
+    </div>`}).join('');
 }
 
 function cambiarEstado(id){
@@ -1676,7 +1734,7 @@ function guardarEstado(){
   if(p.estado==='pagado'&&estadoAnterior!=='pagado') p.fechaPago=Date.now();
   if(p.entrega==='despacho'){
     const cd=parseFloat(document.getElementById('estado-despacho').value)||0;
-    p.costoDespacho=cd;
+    p.costoDespacho=cd; // 0 = gratuito, se permite
     p.total=p.items.reduce((s,i)=>s+i.precio*i.qty,0)+(state.cobroServicio||0)+cd;
   }
   save();cerrarModal('modal-estado');renderPedidos();
@@ -1699,39 +1757,52 @@ function abrirAnularPedido(id){
   abrirModal('modal-anular');
 }
 
-function confirmarAnular(notificar=false, archivar=false){
+function confirmarAnularCompleto(){
   const id=document.getElementById('anular-pedido-id').value;
   const motivo=document.getElementById('anular-motivo').value.trim();
+  if(!motivo){showToast('El motivo de anulación es obligatorio','error');document.getElementById('anular-motivo').focus();return;}
   const p=state.pedidos.find(x=>x.id===id);if(!p)return;
 
-  // Marcar como anulado
   p.estado='anulado';
   p.motivoAnulacion=motivo;
   p.fechaAnulacion=Date.now();
 
-  if(archivar){
-    // Mover a historial
-    if(!state.historial)state.historial=[];
-    state.historial.unshift({...p});
-    state.pedidos=state.pedidos.filter(x=>x.id!==id);
-    actualizarBadgeHistorial();
+  // Archivar siempre
+  if(!state.historial)state.historial=[];
+  state.historial.unshift({...p});
+  state.pedidos=state.pedidos.filter(x=>x.id!==id);
+
+  // Marcar en historial del cliente + contador anulados
+  const telNorm=(p.telefono||'').replace(/\D/g,'');
+  const cl=state.clientes.find(c=>c.whatsapp.replace(/\D/g,'')===telNorm);
+  if(cl){
+    if(!cl.pedidosAnulados)cl.pedidosAnulados=0;
+    cl.pedidosAnulados++;
+    if(cl.historialCompras){
+      const hc=cl.historialCompras.find(h=>h.pedidoId===id);
+      if(hc)hc.anulado=true;
+    }
   }
 
+  actualizarBadgeHistorial();
   save();
   cerrarModal('modal-anular');
   renderPedidos();
-  showToast(archivar?'Pedido anulado y archivado':'Pedido anulado','success');
+  showToast('Pedido anulado y archivado','success');
 
-  // Notificar al cliente por WhatsApp
-  if(notificar){
-    const numWA=(p.telefono||'').replace(/\D/g,'');
-    if(numWA){
-      const msg=`Hola ${p.cliente}! Te informamos que tu pedido *${id}* ha sido anulado.${motivo?'\nMotivo: '+motivo:''}\n\nSi tienes dudas no dudes en contactarnos. 🙏`;
-      window.open(`https://wa.me/${numWA}?text=${encodeURIComponent(msg)}`,'_blank');
-    } else {
-      showToast('El cliente no tiene número de WhatsApp registrado','error');
-    }
+  // WhatsApp al cliente
+  const numWA=(p.telefono||'').replace(/\D/g,'');
+  if(numWA){
+    const msg=`Hola ${p.cliente}! 👋\n\nTe informamos que tu pedido *${id}* ha sido anulado.\n📋 Motivo: ${motivo}\n\nSi tienes dudas no dudes en contactarnos. 🙏`;
+    window.open(`https://wa.me/${numWA}?text=${encodeURIComponent(msg)}`,'_blank');
+  } else {
+    showToast('No hay número de WhatsApp para notificar','error');
   }
+}
+
+function confirmarAnular(notificar=false, archivar=false){
+  // Mantener para compatibilidad interna — delega a la nueva función unificada
+  confirmarAnularCompleto();
 }
 
 function confirmarArchivar(){
@@ -1811,71 +1882,133 @@ function exportarListaCompras(){
     return (ord[a.estado]||0)-(ord[b.estado]||0)||(a.fecha-b.fecha);
   });
 
-  // Productos únicos sin descuentos
+  // ── Productos únicos (sin descuentos) con categoría
   const productosMap={};
   pedidos.forEach(p=>{
     p.items.filter(i=>!i.esDescuento&&i.precio>0).forEach(i=>{
-      if(!productosMap[i.nombre]) productosMap[i.nombre]={nombre:i.nombre,costo:i.costo||0};
+      if(!productosMap[i.nombre]){
+        const prod=state.productos.find(x=>x.id===i.productoId);
+        productosMap[i.nombre]={
+          nombre:i.nombre,
+          costo:i.costo||0,
+          categoria:(prod?.categoria||'Sin categoría')
+        };
+      }
     });
   });
-  const prods=Object.values(productosMap).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  const prods=Object.values(productosMap).sort((a,b)=>{
+    const ca=a.categoria.toLowerCase(),cb=b.categoria.toLowerCase();
+    return ca!==cb?ca.localeCompare(cb):a.nombre.toLowerCase().localeCompare(b.nombre.toLowerCase());
+  });
   if(!prods.length){showToast('Los pedidos no tienen productos','error');return;}
 
   const fmt2=n=>n!=null?new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n):'';
   const fecha=new Date().toLocaleDateString('es-CL');
   const hora=new Date().toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
 
-  // Calcular totales por producto
+  // ── Agrupar pedidos por cliente (fusionar mismo cliente)
+  const clienteMap={};
+  pedidos.forEach(p=>{
+    if(!clienteMap[p.cliente])clienteMap[p.cliente]=[];
+    clienteMap[p.cliente].push(p);
+  });
+  const clientesUnicos=Object.keys(clienteMap);
+
+  // ── Totales por producto
   const totalPorProd={};
   prods.forEach(pr=>{
     let t=0;
-    pedidos.forEach(p=>{const i=p.items.find(x=>x.nombre===pr.nombre&&!x.esDescuento);if(i)t+=i.qty||0;});
+    pedidos.forEach(p=>{
+      const it=p.items.filter(i=>i.nombre===pr.nombre&&!i.esDescuento);
+      it.forEach(i=>t+=i.qty||0);
+    });
     totalPorProd[pr.nombre]=t;
   });
 
-  // Colores estado
+  // ── Cantidad por producto por CLIENTE (suma de todos sus pedidos)
+  const qtyPorClienteProd={};
+  clientesUnicos.forEach(cli=>{
+    qtyPorClienteProd[cli]={};
+    clienteMap[cli].forEach(p=>{
+      p.items.filter(i=>!i.esDescuento&&i.precio>0).forEach(i=>{
+        qtyPorClienteProd[cli][i.nombre]=(qtyPorClienteProd[cli][i.nombre]||0)+(i.qty||0);
+      });
+    });
+  });
+
+  // ── Colores estado
   const colorEstado=e=>e==='confirmado'?'#DBEAFE':'#FEF3C7';
   const colorTexto=e=>e==='confirmado'?'#1E40AF':'#92400E';
 
-  // ── Construir HTML ──
   const thBase='padding:8px 10px;border:1px solid #CBD5E1;font-size:12px;white-space:nowrap;';
   const tdBase='padding:7px 10px;border:1px solid #E2E8F0;font-size:13px;text-align:center;';
 
-  // Encabezado fila 1: Cliente (span sobre sus pedidos)
-  // Primero agrupar pedidos por cliente
-  const clienteGrupos=[];
-  pedidos.forEach(p=>{
-    const last=clienteGrupos[clienteGrupos.length-1];
-    if(last&&last.cliente===p.cliente) last.pedidos.push(p);
-    else clienteGrupos.push({cliente:p.cliente,pedidos:[p]});
-  });
-
-  const tr1=clienteGrupos.map(g=>`<th colspan="${g.pedidos.length}" style="${thBase}background:#1E293B;color:#F8FAFC;text-align:center">${g.cliente}</th>`).join('');
-  const tr2=pedidos.map(p=>`<th style="${thBase}background:#334155;color:#F8FAFC;text-align:center">${p.id}</th>`).join('');
-  const tr3=pedidos.map(p=>`<th style="${thBase}background:#475569;color:#F1F5F9;text-align:center">${new Date(p.fecha).toLocaleDateString('es-CL')}</th>`).join('');
-  const tr4=pedidos.map(p=>`<th style="${thBase}background:${colorEstado(p.estado)};color:${colorTexto(p.estado)};text-align:center;font-weight:700">${p.estado}</th>`).join('');
-
-  // Filas de productos
-  const filasProd=prods.map(pr=>{
-    const total=totalPorProd[pr.nombre]||0;
-    const celdas=pedidos.map(p=>{
-      const item=p.items.find(i=>i.nombre===pr.nombre&&!i.esDescuento);
-      const qty=item?item.qty:null;
-      return `<td style="${tdBase}${qty?'font-weight:600;color:#0F172A;':'color:#CBD5E1;'}">${qty??'—'}</td>`;
-    }).join('');
-    return `<tr>
-      <td style="${tdBase}text-align:left;font-weight:500;color:#0F172A;background:#F8FAFC">${pr.nombre}</td>
-      <td style="${tdBase}color:#64748B">${fmt2(pr.costo)}</td>
-      <td style="${tdBase}font-weight:700;color:#0F172A;background:#F0FDF4">${total||'—'}</td>
-      ${celdas}
-    </tr>`;
+  // ── Encabezado: clientes fusionados
+  const trClientes=clientesUnicos.map(cli=>{
+    const estados=[...new Set(clienteMap[cli].map(p=>p.estado))];
+    const bg=estados.includes('confirmado')?'#1E293B':'#334155';
+    return `<th style="${thBase}background:${bg};color:#F8FAFC;text-align:center">${cli}</th>`;
   }).join('');
 
-  // Fila totales
-  let granTotal=0;
-  const celdaTotales=pedidos.map(p=>{
-    const t=p.items.filter(i=>!i.esDescuento&&i.precio>0).reduce((s,i)=>s+(i.qty||0),0);
-    granTotal+=t;
+  // ── Fila estados (primer estado del cliente)
+  const trEstados=clientesUnicos.map(cli=>{
+    const est=clienteMap[cli][0].estado;
+    return `<th style="${thBase}background:${colorEstado(est)};color:${colorTexto(est)};text-align:center;font-weight:700">${est}</th>`;
+  }).join('');
+
+  // ── Agrupar filas por categoría
+  const categorias=[...new Set(prods.map(p=>p.categoria))];
+
+  let filasProd='';
+  let costoGranTotal=0;
+  let granTotalUnidades=0;
+
+  categorias.forEach(cat=>{
+    const prodsDeEstaCategoria=prods.filter(p=>p.categoria===cat);
+    let costoCategoria=0;
+
+    // Separador de categoría
+    filasProd+=`<tr>
+      <td colspan="${3+clientesUnicos.length}" style="padding:8px 10px;background:#1E293B;color:#F8FAFC;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border:1px solid #CBD5E1">
+        📦 ${cat}
+      </td>
+    </tr>`;
+
+    prodsDeEstaCategoria.forEach(pr=>{
+      const total=totalPorProd[pr.nombre]||0;
+      const costoTotalProd=(pr.costo||0)*total;
+      costoCategoria+=costoTotalProd;
+      granTotalUnidades+=total;
+
+      const celdas=clientesUnicos.map(cli=>{
+        const qty=qtyPorClienteProd[cli][pr.nombre]||null;
+        return `<td style="${tdBase}${qty?'font-weight:600;color:#0F172A;':'color:#CBD5E1;'}">${qty!=null?qty:'—'}</td>`;
+      }).join('');
+
+      filasProd+=`<tr>
+        <td style="${tdBase}text-align:left;font-weight:500;color:#0F172A;background:#F8FAFC">${pr.nombre}</td>
+        <td style="${tdBase}color:#64748B;text-align:right">${pr.costo>0?fmt2(pr.costo):'—'}</td>
+        <td style="${tdBase}font-weight:700;color:#0F172A;background:#F0FDF4">${total||'—'}</td>
+        ${celdas}
+      </tr>`;
+    });
+
+    // Subtotal categoría
+    costoGranTotal+=costoCategoria;
+    filasProd+=`<tr style="background:#F1F5F9">
+      <td style="${tdBase}text-align:right;font-weight:700;color:#334155;font-size:11px;text-transform:uppercase">Subtotal ${cat}</td>
+      <td style="${tdBase}font-weight:700;color:#334155">${costoCategoria>0?fmt2(costoCategoria):'—'}</td>
+      <td style="${tdBase}font-weight:700;color:#14532D">${prodsDeEstaCategoria.reduce((s,p)=>s+(totalPorProd[p.nombre]||0),0)}</td>
+      ${clientesUnicos.map(cli=>{
+        const sum=prodsDeEstaCategoria.reduce((s,p)=>s+(qtyPorClienteProd[cli][p.nombre]||0),0);
+        return `<td style="${tdBase}font-weight:600">${sum||'—'}</td>`;
+      }).join('')}
+    </tr>`;
+  });
+
+  // ── Fila gran total
+  const celdaTotales=clientesUnicos.map(cli=>{
+    const t=Object.values(qtyPorClienteProd[cli]).reduce((s,n)=>s+n,0);
     return `<td style="${tdBase}font-weight:700;background:#F1F5F9">${t}</td>`;
   }).join('');
 
@@ -1888,65 +2021,72 @@ function exportarListaCompras(){
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F8FAFC;color:#0F172A;padding:16px}
-  h1{font-size:20px;font-weight:700;margin-bottom:4px;color:#0F172A}
-  .meta{font-size:13px;color:#64748B;margin-bottom:20px}
-  .resumen{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
-  .chip{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:8px 14px;font-size:13px}
-  .chip strong{display:block;font-size:18px;font-weight:700;color:#0F172A}
+  h1{font-size:20px;font-weight:700;margin-bottom:4px}
+  .meta{font-size:13px;color:#64748B;margin-bottom:16px}
+  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .chip{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:7px 14px;font-size:13px}
+  .chip strong{display:block;font-size:18px;font-weight:700}
   .chip span{color:#64748B;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  .toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .btn-export{background:#2D7A4A;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer}
+  .btn-print{background:#E8386A;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer}
   .table-wrap{overflow-x:auto;border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.08)}
-  table{border-collapse:collapse;width:100%;background:#fff}
-  .confirmado{background:#DBEAFE;color:#1E40AF}
-  .pendiente{background:#FEF3C7;color:#92400E}
-  @media print{body{padding:0}.table-wrap{box-shadow:none}}
-  .print-btn{background:#E8386A;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px}
+  table{border-collapse:collapse;width:100%;background:#fff;min-width:600px}
+  @media print{.toolbar{display:none}.table-wrap{box-shadow:none}}
 </style>
 </head>
 <body>
-<button class="print-btn" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()">🖨 Imprimir / PDF</button>
+  <button class="btn-export" onclick="exportarExcel()">📥 Exportar Excel</button>
+</div>
 <h1>📋 Lista de Compras</h1>
-<div class="meta">Generada el ${fecha} a las ${hora} &nbsp;·&nbsp; ${pedidos.length} pedidos &nbsp;·&nbsp; ${prods.length} productos</div>
-<div class="resumen">
+<div class="meta">Generada el ${fecha} a las ${hora} &nbsp;·&nbsp; ${pedidos.length} pedidos &nbsp;·&nbsp; ${clientesUnicos.length} clientes &nbsp;·&nbsp; ${prods.length} productos</div>
+<div class="chips">
   <div class="chip"><span>Pedidos</span><strong>${pedidos.length}</strong></div>
-  <div class="chip"><span>Productos distintos</span><strong>${prods.length}</strong></div>
-  <div class="chip"><span>Unidades totales</span><strong>${Object.values(totalPorProd).reduce((s,n)=>s+n,0)}</strong></div>
-  <div class="chip"><span>Confirmados</span><strong style="color:#1E40AF">${pedidos.filter(p=>p.estado==='confirmado').length}</strong></div>
-  <div class="chip"><span>Pendientes</span><strong style="color:#92400E">${pedidos.filter(p=>p.estado==='pendiente').length}</strong></div>
+  <div class="chip"><span>Clientes</span><strong>${clientesUnicos.length}</strong></div>
+  <div class="chip"><span>Productos</span><strong>${prods.length}</strong></div>
+  <div class="chip"><span>Unidades totales</span><strong>${granTotalUnidades}</strong></div>
+  <div class="chip"><span>Costo total</span><strong style="color:#A32D2D">${costoGranTotal>0?fmt2(costoGranTotal):'—'}</strong></div>
 </div>
 <div class="table-wrap">
-<table>
+<table id="tabla-compras">
 <thead>
   <tr>
-    <th rowspan="4" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:left;min-width:160px">Producto</th>
-    <th rowspan="4" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:center;min-width:90px">Costo unit.</th>
-    <th rowspan="4" style="${thBase}background:#14532D;color:#DCFCE7;text-align:center;min-width:70px">Total</th>
-    ${tr1}
+    <th rowspan="3" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:left;min-width:160px">Producto</th>
+    <th rowspan="3" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:right;min-width:85px">Costo unit.</th>
+    <th rowspan="3" style="${thBase}background:#14532D;color:#DCFCE7;text-align:center;min-width:60px">Total</th>
+    ${trClientes}
   </tr>
-  <tr>${tr2}</tr>
-  <tr>${tr3}</tr>
-  <tr>${tr4}</tr>
+  <tr>${trEstados}</tr>
 </thead>
 <tbody>
   ${filasProd}
   <tr style="border-top:2px solid #CBD5E1">
-    <td style="${tdBase}text-align:left;font-weight:700;background:#F1F5F9">TOTAL GENERAL</td>
-    <td style="${tdBase}background:#F1F5F9"></td>
-    <td style="${tdBase}font-weight:800;font-size:15px;background:#DCFCE7;color:#14532D">${granTotal}</td>
+    <td style="${tdBase}text-align:left;font-weight:800;background:#F1F5F9;font-size:13px">GRAN TOTAL</td>
+    <td style="${tdBase}font-weight:800;background:#F1F5F9;color:#A32D2D">${costoGranTotal>0?fmt2(costoGranTotal):'—'}</td>
+    <td style="${tdBase}font-weight:800;font-size:15px;background:#DCFCE7;color:#14532D">${granTotalUnidades}</td>
     ${celdaTotales}
   </tr>
 </tbody>
 </table>
 </div>
-<div style="margin-top:20px;font-size:12px;color:#94A3B8">
-  <strong>Pedidos incluidos:</strong> ${pedidos.map(p=>`${p.id} (${p.cliente} · ${p.estado})`).join(' &nbsp;|&nbsp; ')}
-</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"><\/script>
+<script>
+function exportarExcel(){
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.table_to_sheet(document.getElementById('tabla-compras'));
+  XLSX.utils.book_append_sheet(wb,ws,'Lista de Compras');
+  XLSX.writeFile(wb,'lista_compras_${fecha.replace(/\//g,'-')}.xlsx');
+}
+<\/script>
 </body>
 </html>`;
 
   const win=window.open('','_blank');
   win.document.write(html);
   win.document.close();
-  showToast(`Lista generada — ${prods.length} productos, ${pedidos.length} pedidos`,'success');
+  showToast(`Lista generada — ${prods.length} productos, ${clientesUnicos.length} clientes`,'success');
 }
 
 
@@ -1982,7 +2122,9 @@ function exportarPedidos(){
   ws['!cols']=[{wch:18},{wch:18},{wch:22},{wch:14},{wch:12},{wch:8},{wch:12},{wch:8},{wch:12},{wch:8},{wch:10},{wch:24},{wch:10},{wch:28},{wch:8},{wch:12},{wch:12},{wch:12},{wch:12},{wch:14},{wch:14},{wch:12},{wch:14},{wch:12},{wch:14},{wch:20}];
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Pedidos');
   XLSX.writeFile(wb,'pedidos.xlsx');
+  localStorage.setItem('mp_ultima_exportacion_pedidos', Date.now().toString());
   showToast('Exportado como pedidos.xlsx','success');
+  renderPedidos();
 }
 
 // ─── PRODUCTOS ADMIN ─────────────────────────────────────
@@ -2596,11 +2738,26 @@ function renderClientes(){
   if(btnT){btnT.classList.toggle('active',vistaClientes==='tarjetas');btnL.classList.toggle('active',vistaClientes==='lista');}
 
   const getStats = c => {
-    const ped=state.pedidos.filter(p=>p.telefono&&c.whatsapp&&p.telefono.replace(/\D/g,'')===c.whatsapp.replace(/\D/g,''));
+    const telNorm=(c.whatsapp||'').replace(/\D/g,'');
+    const todosLos=[...state.pedidos,...(state.historial||[])].filter(p=>{
+      const tpNorm=(p.telefono||'').replace(/\D/g,'');
+      return tpNorm&&tpNorm===telNorm;
+    });
+    const ped=todosLos.filter(p=>p.estado!=='anulado');
+    const anulados=todosLos.filter(p=>p.estado==='anulado').length;
     const totalVentas=ped.reduce((s,p)=>s+p.total,0);
     const totalGanancia=ped.reduce((s,p)=>s+(p.ganancia||p.total-(p.costo||0)),0);
-    return {ped, totalVentas, totalGanancia};
+    return {ped, anulados, totalVentas, totalGanancia};
   };
+
+  // Fecha último respaldo clientes
+  const ultimaExpCli=parseInt(localStorage.getItem('mp_ultima_exportacion_clientes')||'0');
+  const respaldoCliEl=document.getElementById('respaldo-clientes-info');
+  if(respaldoCliEl){
+    respaldoCliEl.innerHTML=ultimaExpCli
+      ?`<div style="font-size:12px;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;gap:6px">💾 Último respaldo Clientes: <strong style="color:var(--text2)">${new Date(ultimaExpCli).toLocaleDateString('es-CL')} a las ${new Date(ultimaExpCli).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit',hour12:false})}</strong></div>`
+      :`<div style="font-size:12px;color:#A32D2D;margin-bottom:12px;">⚠️ Nunca se ha exportado el Excel de clientes</div>`;
+  }
 
   if (vistaClientes === 'lista') {
     document.getElementById('clientes-list').innerHTML = `
@@ -2613,7 +2770,7 @@ function renderClientes(){
           <span></span>
         </div>
         ${list.map(c => {
-          const {ped, totalVentas, totalGanancia} = getStats(c);
+          const {ped, anulados, totalVentas, totalGanancia} = getStats(c);
           const seleccionado = clientesSeleccionados.has(c.id);
           const iniciales = c.nombre.substring(0,2).toUpperCase();
           return `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);align-items:center;${seleccionado?'background:var(--accent-light)':''}">
@@ -2637,7 +2794,7 @@ function renderClientes(){
       </div>`;
   } else {
     document.getElementById('clientes-list').innerHTML=list.map(c=>{
-      const {ped, totalVentas, totalGanancia} = getStats(c);
+      const {ped, anulados, totalVentas, totalGanancia} = getStats(c);
       const historial=(c.historialCompras||[]).slice().sort((a,b)=>b.fecha-a.fecha).slice(0,3);
       const seleccionado=clientesSeleccionados.has(c.id);
       return `<div class="cliente-card" style="${seleccionado?'border-color:var(--accent);border-width:2px;':''}">
@@ -2658,6 +2815,7 @@ function renderClientes(){
           <div class="cliente-stat"><div class="cliente-stat-v">${ped.length}</div><div class="cliente-stat-l">Pedidos</div></div>
           <div class="cliente-stat"><div class="cliente-stat-v">${fmt(totalVentas)}</div><div class="cliente-stat-l">Ventas</div></div>
           <div class="cliente-stat"><div class="cliente-stat-v" style="color:var(--green)">${fmt(totalGanancia)}</div><div class="cliente-stat-l">Ganancia</div></div>
+          ${anulados>0?`<div class="cliente-stat"><div class="cliente-stat-v" style="color:#A32D2D">${anulados}</div><div class="cliente-stat-l">Anulados</div></div>`:''}
         </div>
         ${historial.length?`
         <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
@@ -2680,23 +2838,41 @@ function renderClientes(){
 }
 
 function exportarClientes(){
-  const rows=[['Nombre','WhatsApp','Email','Dirección','Notas','N° Pedidos','Total Ventas','Total Ganancia','Fechas de compra','Montos por compra','Ganancias por compra']];
+  const fmtFecha=ts=>ts?new Date(ts).toLocaleDateString('es-CL'):'';
+  // Encabezados nuevos (sin fechas/montos individuales)
+  const rows=[['Nombre','WhatsApp','Email','Dirección','Notas','Cumpleaños','Fecha último pedido','N° Pedidos (sin anulados)','Pedidos anulados','Total Ventas','Total Ganancia']];
   state.clientes.forEach(c=>{
-    const ped=state.pedidos.filter(p=>p.telefono&&c.whatsapp&&p.telefono.replace(/\D/g,'')===c.whatsapp.replace(/\D/g,''));
-    const totalV=ped.reduce((s,p)=>s+p.total,0);
-    const totalG=ped.reduce((s,p)=>s+(p.ganancia||p.total-(p.costo||0)),0);
-    const hist=(c.historialCompras||[]).slice().sort((a,b)=>a.fecha-b.fecha);
-    const fechas=hist.map(h=>new Date(h.fecha).toLocaleDateString('es-CL')).join(' | ');
-    const montos=hist.map(h=>h.total).join(' | ');
-    const ganancias=hist.map(h=>h.ganancia).join(' | ');
-    rows.push([c.nombre,c.whatsapp,c.email||'',c.direccion||'',c.notas||'',ped.length,totalV,totalG,fechas,montos,ganancias]);
+    // Pedidos activos del cliente (sin anulados)
+    const telNorm=(c.whatsapp||'').replace(/\D/g,'');
+    const pedCli=[...state.pedidos,...(state.historial||[])].filter(p=>{
+      const tpNorm=(p.telefono||'').replace(/\D/g,'');
+      return tpNorm&&tpNorm===telNorm;
+    });
+    const pedNoAnulados=pedCli.filter(p=>p.estado!=='anulado');
+    const pedAnulados=pedCli.filter(p=>p.estado==='anulado').length;
+    const totalV=pedNoAnulados.reduce((s,p)=>s+p.total,0);
+    const totalG=pedNoAnulados.reduce((s,p)=>s+(p.ganancia||p.total-(p.costo||0)),0);
+    // Fecha último pedido (no anulado)
+    const fechaUltimo=pedNoAnulados.length
+      ?fmtFecha(Math.max(...pedNoAnulados.map(p=>p.fecha)))
+      :'Sin pedidos';
+    const cumple=c.cumpleanos
+      ?new Date(c.cumpleanos+'T12:00:00').toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit'})
+      :'';
+    rows.push([
+      c.nombre, c.whatsapp, c.email||'', c.direccion||'', c.notas||'',
+      cumple, fechaUltimo,
+      pedNoAnulados.length, pedAnulados,
+      totalV, totalG
+    ]);
   });
   const ws=XLSX.utils.aoa_to_sheet(rows);
-  // Ancho de columnas
-  ws['!cols']=[{wch:22},{wch:16},{wch:24},{wch:28},{wch:20},{wch:10},{wch:14},{wch:14},{wch:36},{wch:24},{wch:24}];
+  ws['!cols']=[{wch:22},{wch:16},{wch:24},{wch:28},{wch:20},{wch:12},{wch:18},{wch:22},{wch:16},{wch:14},{wch:14}];
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Clientes');
   XLSX.writeFile(wb,'clientes_mamaspormayor.xlsx');
+  localStorage.setItem('mp_ultima_exportacion_clientes', Date.now().toString());
   showToast('Reporte de clientes exportado','success');
+  renderClientes();
 }
 
 function abrirModalCliente(id=null){
@@ -2964,7 +3140,7 @@ function npRenderItems() {
         </div>
         <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
           <button onclick="npCambiarQty(${idx},-1)" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);cursor:pointer">−</button>
-          <input type="number" min="0.01" step="any" value="${item.qty}" onchange="npSetQty(${idx},this.value)" style="width:52px;text-align:center;border:1px solid var(--border);border-radius:6px;font-size:13px;font-weight:600;padding:3px 2px">
+          <input type="number" min="0.01" step="any" value="${item.qty}" onchange="npSetQty(${idx},this.value)" style="width:60px;text-align:center;border:1px solid var(--border);border-radius:6px;font-size:13px;font-weight:600;padding:3px 2px">
           <button onclick="npCambiarQty(${idx},1)" style="width:26px;height:26px;border-radius:6px;background:var(--accent);color:#fff;border:none;cursor:pointer">+</button>
         </div>
         <div style="min-width:56px;text-align:right;font-size:13px;font-weight:600">${fmt(item.precio*item.qty)}</div>
@@ -2977,8 +3153,7 @@ function npRenderItems() {
 
 function npCambiarQty(idx, delta) {
   const item = npItems[idx];
-  const step = item.unidad==='kg'||item.unidad==='litro'||item.unidad==='metro' ? 0.25 : 1;
-  item.qty = Math.max(step, Math.round((item.qty + delta*step)*100)/100);
+  item.qty = Math.max(0.01, Math.round((item.qty + delta)*100)/100);
   npRenderItems();
 }
 
@@ -3037,11 +3212,18 @@ function guardarNuevoPedido() {
 function renderReportes(){
   const dias=parseInt(document.getElementById('filter-periodo').value);
   const desde=Date.now()-dias*86400000;
-  const ped=state.pedidos.filter(p=>p.fecha>=desde&&p.estado!=='anulado');
+  // Excluir anulados
+  const todosHist=[...state.pedidos,...(state.historial||[])];
+  const ped=todosHist.filter(p=>p.fecha>=desde&&p.estado!=='anulado');
   const totalV=ped.reduce((s,p)=>s+p.total,0);
   const totalC=ped.reduce((s,p)=>s+(p.costo||0),0);
   const ganancia=totalV-totalC;
   const ticket=ped.length?Math.round(totalV/ped.length):0;
+
+  // Desglose financiero detallado
+  const totalServicios=ped.reduce((s,p)=>s+(p.servicio||0),0);
+  const totalDespachos=ped.reduce((s,p)=>s+(p.costoDespacho||0),0);
+  const subtotalProductos=ped.reduce((s,p)=>s+p.items.filter(i=>!i.esDescuento&&i.precio>0).reduce((ss,i)=>ss+i.precio*i.qty,0),0);
 
   document.getElementById('stats-reportes').innerHTML=`
     <div class="stat"><div class="stat-label">Ingresos</div><div class="stat-value">${fmt(totalV)}</div><div class="stat-sub">${ped.length} pedidos</div></div>
@@ -3084,6 +3266,31 @@ function renderReportes(){
 
   document.getElementById('reporte-charts').innerHTML=`
     <div class="reporte-card" style="grid-column:1/-1">
+      <div class="reporte-card-title">📊 Desglose financiero</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+        <div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:4px">Productos</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)">${fmt(subtotalProductos)}</div>
+        </div>
+        ${totalServicios>0?`<div style="background:var(--surface2);border-radius:var(--radius);padding:12px 14px">
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:4px">🔧 Cobro servicio</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)">${fmt(totalServicios)}</div>
+        </div>`:''}
+        ${totalDespachos>0?`<div style="background:var(--blue-light);border-radius:var(--radius);padding:12px 14px">
+          <div style="font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;margin-bottom:4px">🚚 Despachos cobrados</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--blue)">${fmt(totalDespachos)}</div>
+        </div>`:''}
+        <div style="background:#FCEBEB;border-radius:var(--radius);padding:12px 14px">
+          <div style="font-size:11px;font-weight:600;color:#A32D2D;text-transform:uppercase;margin-bottom:4px">📉 Costo productos</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#A32D2D">${fmt(totalC)}</div>
+        </div>
+        <div style="background:var(--green-light);border-radius:var(--radius);padding:12px 14px">
+          <div style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;margin-bottom:4px">✨ Ganancia neta</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--green)">${fmt(ganancia)}</div>
+        </div>
+      </div>
+    </div>
+    <div class="reporte-card" style="grid-column:1/-1">
       <div class="reporte-card-title">Ventas por día</div>
       <div style="position:relative;height:220px"><canvas id="chart-dias"></canvas></div>
     </div>
@@ -3108,7 +3315,7 @@ function renderReportes(){
       </div>
     </div>`;
 
-  // Render gráfico de barras ventas por día
+  // Render gráficos
   setTimeout(()=>{
     const ctxD=document.getElementById('chart-dias');
     if(!ctxD)return;
@@ -3117,26 +3324,14 @@ function renderReportes(){
       type:'bar',
       data:{
         labels:Object.keys(ventasPorDia),
-        datasets:[{
-          label:'Ventas',
-          data:Object.values(ventasPorDia),
-          backgroundColor:'rgba(200,86,42,0.75)',
-          borderColor:'#C8562A',
-          borderWidth:1,
-          borderRadius:4
-        }]
+        datasets:[{label:'Ventas',data:Object.values(ventasPorDia),backgroundColor:'rgba(200,86,42,0.75)',borderColor:'#C8562A',borderWidth:1,borderRadius:4}]
       },
       options:{
         responsive:true,maintainAspectRatio:false,
         plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'  '+fmt(ctx.raw)}}},
-        scales:{
-          y:{ticks:{callback:v=>fmt(v)},grid:{color:'rgba(0,0,0,0.05)'}},
-          x:{grid:{display:false}}
-        }
+        scales:{y:{ticks:{callback:v=>fmt(v)},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}
       }
     });
-
-    // Render gráfico torta categorías
     const ctxC=document.getElementById('chart-cats');
     if(!ctxC||!topCats.length)return;
     if(ctxC._chart)ctxC._chart.destroy();
@@ -3144,12 +3339,7 @@ function renderReportes(){
       type:'doughnut',
       data:{
         labels:topCats.map(([k])=>k),
-        datasets:[{
-          data:topCats.map(([,v])=>v),
-          backgroundColor:colores.slice(0,topCats.length),
-          borderWidth:2,
-          borderColor:'#FAF8F4'
-        }]
+        datasets:[{data:topCats.map(([,v])=>v),backgroundColor:colores.slice(0,topCats.length),borderWidth:2,borderColor:'#FAF8F4'}]
       },
       options:{
         responsive:true,maintainAspectRatio:false,
@@ -3831,6 +4021,12 @@ function editarPedido(id){
   document.getElementById('editar-pedido-id').value=id;
   document.getElementById('editar-pedido-titulo').textContent=`Editar ${id} — ${p.cliente}`;
   document.getElementById('editar-notas').value=p.notas||'';
+  // Cargar tipo de entrega
+  const entrega=p.entrega||'llevar';
+  document.getElementById('edit-opt-llevar').classList.toggle('selected',entrega==='llevar');
+  document.getElementById('edit-opt-despacho').classList.toggle('selected',entrega==='despacho');
+  document.getElementById('edit-campo-direccion').style.display=entrega==='despacho'?'block':'none';
+  document.getElementById('edit-direccion').value=p.direccion||'';
   // Copia profunda de items para editar sin afectar el original
   itemsEditando=p.items.map(i=>({...i}));
   // Cargar select de productos
@@ -3955,16 +4151,27 @@ function agregarItemAlPedido(){
   renderEditarItems();
 }
 
+function editarSelectEntrega(tipo){
+  document.getElementById('edit-opt-llevar').classList.toggle('selected',tipo==='llevar');
+  document.getElementById('edit-opt-despacho').classList.toggle('selected',tipo==='despacho');
+  document.getElementById('edit-campo-direccion').style.display=tipo==='despacho'?'block':'none';
+}
+
 function guardarEdicionPedido(){
   const id=document.getElementById('editar-pedido-id').value;
   const p=state.pedidos.find(x=>x.id===id);if(!p)return;
   if(itemsEditando.length===0){showToast('El pedido debe tener al menos un item','error');return;}
   p.items=itemsEditando.map(i=>({...i}));
   p.notas=document.getElementById('editar-notas').value.trim();
+  // Actualizar entrega
+  const esLlevar=document.getElementById('edit-opt-llevar').classList.contains('selected');
+  const esDespacho=document.getElementById('edit-opt-despacho').classList.contains('selected');
+  if(esLlevar)p.entrega='llevar';
+  else if(esDespacho){p.entrega='despacho';p.direccion=document.getElementById('edit-direccion').value.trim();}
   // Recalcular totales
   const subtotal=p.items.reduce((s,i)=>s+i.precio*i.qty,0);
   const servicio=state.cobroServicio||0;
-  const despacho=p.costoDespacho||0;
+  const despacho=p.entrega==='llevar'?0:(p.costoDespacho||0);
   p.total=subtotal+servicio+despacho;
   p.costo=p.items.reduce((s,i)=>s+(i.costo||0)*i.qty,0);
   p.ganancia=p.total-p.costo;
