@@ -1970,7 +1970,7 @@ function exportarListaCompras(){
 
     // Separador de categoría
     filasProd+=`<tr>
-      <td colspan="${3+clientesUnicos.length}" style="padding:8px 10px;background:#1E293B;color:#F8FAFC;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border:1px solid #CBD5E1">
+      <td colspan="${4+clientesUnicos.length}" style="padding:8px 10px;background:#1E293B;color:#F8FAFC;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border:1px solid #CBD5E1">
         📦 ${cat}
       </td>
     </tr>`;
@@ -2056,10 +2056,10 @@ function exportarListaCompras(){
 <table id="tabla-compras">
 <thead>
   <tr>
-    <th rowspan="3" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:left;min-width:160px">Producto</th>
-    <th rowspan="3" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:right;min-width:85px">Costo unit.</th>
-    <th rowspan="3" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:right;min-width:85px">Precio unit.</th>
-    <th rowspan="3" style="${thBase}background:#14532D;color:#DCFCE7;text-align:center;min-width:60px">Total</th>
+    <th rowspan="2" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:left;min-width:160px">Producto</th>
+    <th rowspan="2" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:right;min-width:85px">Costo unit.</th>
+    <th rowspan="2" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:right;min-width:85px">Precio unit.</th>
+    <th rowspan="2" style="${thBase}background:#14532D;color:#DCFCE7;text-align:center;min-width:60px">Total</th>
     ${trClientes}
   </tr>
   <tr>${trEstados}</tr>
