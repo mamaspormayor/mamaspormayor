@@ -1891,6 +1891,7 @@ function exportarListaCompras(){
         productosMap[i.nombre]={
           nombre:i.nombre,
           costo:i.costo||0,
+          precio:i.precio||0,
           categoria:(prod?.categoria||'Sin categoría')
         };
       }
@@ -1988,6 +1989,7 @@ function exportarListaCompras(){
       filasProd+=`<tr>
         <td style="${tdBase}text-align:left;font-weight:500;color:#0F172A;background:#F8FAFC">${pr.nombre}</td>
         <td style="${tdBase}color:#64748B;text-align:right">${pr.costo>0?fmt2(pr.costo):'—'}</td>
+        <td style="${tdBase}color:#1E40AF;text-align:right;font-weight:500">${pr.precio>0?fmt2(pr.precio):'—'}</td>
         <td style="${tdBase}font-weight:700;color:#0F172A;background:#F0FDF4">${total||'—'}</td>
         ${celdas}
       </tr>`;
@@ -1998,6 +2000,7 @@ function exportarListaCompras(){
     filasProd+=`<tr style="background:#F1F5F9">
       <td style="${tdBase}text-align:right;font-weight:700;color:#334155;font-size:11px;text-transform:uppercase">Subtotal ${cat}</td>
       <td style="${tdBase}font-weight:700;color:#334155">${costoCategoria>0?fmt2(costoCategoria):'—'}</td>
+      <td style="${tdBase}"></td>
       <td style="${tdBase}font-weight:700;color:#14532D">${prodsDeEstaCategoria.reduce((s,p)=>s+(totalPorProd[p.nombre]||0),0)}</td>
       ${clientesUnicos.map(cli=>{
         const sum=prodsDeEstaCategoria.reduce((s,p)=>s+(qtyPorClienteProd[cli][p.nombre]||0),0);
@@ -2055,6 +2058,7 @@ function exportarListaCompras(){
   <tr>
     <th rowspan="3" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:left;min-width:160px">Producto</th>
     <th rowspan="3" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:right;min-width:85px">Costo unit.</th>
+    <th rowspan="3" style="${thBase}background:#0F172A;color:#F8FAFC;text-align:right;min-width:85px">Precio unit.</th>
     <th rowspan="3" style="${thBase}background:#14532D;color:#DCFCE7;text-align:center;min-width:60px">Total</th>
     ${trClientes}
   </tr>
@@ -2065,6 +2069,7 @@ function exportarListaCompras(){
   <tr style="border-top:2px solid #CBD5E1">
     <td style="${tdBase}text-align:left;font-weight:800;background:#F1F5F9;font-size:13px">GRAN TOTAL</td>
     <td style="${tdBase}font-weight:800;background:#F1F5F9;color:#A32D2D">${costoGranTotal>0?fmt2(costoGranTotal):'—'}</td>
+    <td style="${tdBase}background:#F1F5F9"></td>
     <td style="${tdBase}font-weight:800;font-size:15px;background:#DCFCE7;color:#14532D">${granTotalUnidades}</td>
     ${celdaTotales}
   </tr>
