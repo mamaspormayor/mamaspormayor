@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Catálogo — Mamás por Mayor</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
+<!-- PWA -->
+<link rel="manifest" href="/mamaspormayor/manifest-catalogo.json">
+<meta name="theme-color" content="#C8562A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mamás por Mayor">
+<link rel="apple-touch-icon" href="/mamaspormayor/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -134,6 +142,24 @@ textarea.form-input{min-height:72px;resize:vertical}
 
 /* ── DIVIDER ── */
 .divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+/* ── BANNER INSTALACIÓN PWA ── */
+#pwa-install-banner{
+  display:none;position:fixed;top:0;left:0;right:0;z-index:600;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
+  color:#fff;padding:10px 16px;
+  flex-direction:row;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:0 2px 12px rgba(200,86,42,.35);font-family:'DM Sans',sans-serif;
+}
+#pwa-install-banner.visible{display:flex}
+.pwa-banner-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.pwa-banner-icon{width:36px;height:36px;border-radius:8px;flex-shrink:0;object-fit:cover;background:rgba(255,255,255,.15)}
+.pwa-banner-text{font-size:13px;font-weight:600;line-height:1.3}
+.pwa-banner-actions{display:flex;gap:7px;flex-shrink:0}
+.pwa-btn-install{background:#fff;color:var(--accent);border:none;border-radius:20px;padding:7px 16px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .18s}
+.pwa-btn-install:hover{background:var(--accent-light)}
+.pwa-btn-close{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.55);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .18s}
+.pwa-btn-close:hover{background:rgba(255,255,255,.15)}
 
 /* ── TOAST ── */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:#FAF8F4;padding:12px 22px;border-radius:var(--radius);font-size:13px;font-weight:500;z-index:400;opacity:0;transition:all .3s;white-space:nowrap}
@@ -269,6 +295,59 @@ textarea.form-input{min-height:72px;resize:vertical}
 </footer>
 
 <div class="toast" id="toast"></div>
+
+<!-- ── BANNER INSTALACIÓN PWA ── -->
+<div id="pwa-install-banner">
+  <div class="pwa-banner-left">
+    <img class="pwa-banner-icon" id="pwa-banner-icon" src="/mamaspormayor/icon-192.png" alt="Mamás por Mayor">
+    <span class="pwa-banner-text">📲 Agrega el catálogo a tu pantalla de inicio</span>
+  </div>
+  <div class="pwa-banner-actions">
+    <button class="pwa-btn-install" id="pwa-btn-install">Instalar</button>
+    <button class="pwa-btn-close"   id="pwa-btn-close">✕</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const BANNER_KEY = 'pwa_banner_dismissed';
+  let deferredPrompt = null;
+  const banner   = document.getElementById('pwa-install-banner');
+  const btnInst  = document.getElementById('pwa-btn-install');
+  const btnClose = document.getElementById('pwa-btn-close');
+
+  if (localStorage.getItem(BANNER_KEY)) return;
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    banner.classList.add('visible');
+    document.body.style.paddingTop = banner.offsetHeight + 'px';
+  });
+
+  btnInst.addEventListener('click', function () {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function () {
+      deferredPrompt = null;
+      ocultarBanner();
+    });
+  });
+
+  btnClose.addEventListener('click', function () {
+    localStorage.setItem(BANNER_KEY, '1');
+    ocultarBanner();
+  });
+
+  function ocultarBanner() {
+    banner.classList.remove('visible');
+    document.body.style.paddingTop = '';
+  }
+
+  window.addEventListener('appinstalled', ocultarBanner);
+})();
+</script>
+<!-- ── FIN BANNER PWA ── -->
 
 <script>
 // ── CONFIG SUPABASE ───────────────────────────────────────

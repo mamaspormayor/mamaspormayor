@@ -1,0 +1,25 @@
+{
+  "name": "Mamás por Mayor — Catálogo",
+  "short_name": "Catálogo MxM",
+  "description": "Catálogo de productos Mamás por Mayor",
+  "start_url": "/mamaspormayor/catalogo.html",
+  "scope": "/mamaspormayor/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF8F4",
+  "theme_color": "#C8562A",
+  "icons": [
+    {
+      "src": "/mamaspormayor/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/mamaspormayor/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
