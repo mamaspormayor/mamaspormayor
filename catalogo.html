@@ -420,20 +420,24 @@ async function cargarDatos() {
 async function guardarPedidoEnNube(nuevoPedido) {
   if (!_sb) return;
   try {
-    // Traer estado actual para no pisar otros datos
     const { data } = await _sb
       .from('app_data')
       .select('state')
       .eq('store_id', STORE_ID)
       .maybeSingle();
 
-    if (!data) return;
-    const s = data.state;
+    if (!data) {
+      console.warn('No se encontró la fila app_data. El pedido no pudo guardarse en el panel.');
+      return;
+    }
+
+    // Si state existe pero le faltan claves, inicializarlas
+    const s = data.state || {};
     const pedidosActuales = s.pedidos || [];
-    // Verificar cliente y actualizar
-    const telNorm = nuevoPedido.telefono.replace(/\s/g,'');
     const clientesActuales = s.clientes || [];
-    let cl = clientesActuales.find(c => c.whatsapp.replace(/\s/g,'') === telNorm || c.whatsapp.replace(/\D/g,'') === telNorm.replace(/\D/g,''));
+
+    const telNorm = nuevoPedido.telefono.replace(/\s/g,'');
+    let cl = clientesActuales.find(c => c.whatsapp && (c.whatsapp.replace(/\s/g,'') === telNorm || c.whatsapp.replace(/\D/g,'') === telNorm.replace(/\D/g,'')));
     if (cl) {
       cl.nombre = nuevoPedido.cliente;
       if (nuevoPedido.direccion) cl.direccion = nuevoPedido.direccion;
@@ -443,10 +447,12 @@ async function guardarPedidoEnNube(nuevoPedido) {
       clientesActuales.push({ id: 'c'+Date.now(), nombre: nuevoPedido.cliente, whatsapp: nuevoPedido.telefono, email: '', direccion: nuevoPedido.direccion || '', notas: '', historialCompras: [{ pedidoId: nuevoPedido.id, fecha: nuevoPedido.fecha, total: nuevoPedido.total }] });
     }
 
-    await _sb.from('app_data').update({
+    const { error } = await _sb.from('app_data').update({
       state: { ...s, pedidos: [nuevoPedido, ...pedidosActuales], clientes: clientesActuales },
       updated_at: new Date().toISOString()
     }).eq('store_id', STORE_ID);
+
+    if (error) console.warn('Error al guardar pedido en Supabase:', error.message);
   } catch(e) {
     console.warn('Error al guardar pedido:', e.message);
   }
