@@ -189,9 +189,182 @@ textarea.form-input{min-height:72px;resize:vertical}
   .catalog-banner-title{font-size:17px}
   .container{padding:16px}
 }
+
+/* ── PLANIFICADOR ── */
+.plan-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.4);font-size:12px;font-weight:600;cursor:pointer;margin-top:8px;font-family:'Syne',sans-serif}
+.plan-btn:hover{background:rgba(255,255,255,0.3)}
+#planificador-overlay{display:none;position:fixed;inset:0;background:#FAF8F4;z-index:500;overflow-y:auto;padding:16px}
+#planificador-overlay.visible{display:block}
+.plan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.plan-header-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#1A1714}
+.plan-close{background:#fff;border:0.5px solid #DDD8CC;border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;color:#5C5448}
+.pstep{display:none}.pstep.active{display:block}
+.ptitulo{font-size:15px;font-weight:600;color:#1A1714;margin-bottom:4px;font-family:'Syne',sans-serif}
+.psubtitulo{font-size:13px;color:#5C5448;margin-bottom:14px}
+.pnota{font-size:12px;color:#5C5448;background:#fff;border:0.5px solid #DDD8CC;border-radius:8px;padding:8px 12px;margin-bottom:14px;line-height:1.5}
+.pchips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.pchip{padding:6px 13px;border-radius:20px;border:0.5px solid #DDD8CC;font-size:13px;cursor:pointer;background:#fff;color:#1A1714}
+.pchip.psel{background:#C8562A;color:#fff;border-color:#C8562A}
+.pchip.psel-warn{background:#FFF3CD;color:#856404;border-color:#FFC107}
+.pchip.psel-tiene{background:#D4EDDA;color:#155724;border-color:#28A745}
+.pacciones{display:flex;align-items:center;margin-top:10px}
+.pbtn-sig{padding:9px 22px;border-radius:8px;background:#C8562A;color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif}
+.pbtn-vol{padding:9px 14px;border-radius:8px;background:#fff;color:#5C5448;border:0.5px solid #DDD8CC;font-size:13px;cursor:pointer;margin-right:8px}
+.pprog{display:flex;gap:5px;margin-bottom:18px;align-items:center;flex-wrap:wrap}
+.pprog-paso{width:18px;height:4px;border-radius:2px;background:#DDD8CC}
+.pprog-paso.done{background:#C8562A}
+.pprog-label{font-size:11px;color:#9B9082;margin-left:4px}
+.pop-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-bottom:16px}
+.pop-card{border:0.5px solid #DDD8CC;border-radius:10px;padding:11px 6px;text-align:center;cursor:pointer;background:#fff}
+.pop-card.psel{border-color:#C8562A;background:#FDF0E8}
+.pop-card.psel .pop-label{color:#C8562A}
+.pop-num{font-size:20px;font-weight:600;color:#1A1714}
+.pop-label{font-size:11px;color:#9B9082;margin-top:2px}
+.ppersonas-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.ppersonas-card{background:#fff;border:0.5px solid #DDD8CC;border-radius:10px;padding:12px;text-align:center}
+.pcnt{display:flex;align-items:center;justify-content:center;gap:10px}
+.pcnt-btn{width:28px;height:28px;border-radius:50%;border:0.5px solid #DDD8CC;background:#FAF8F4;color:#1A1714;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pcnt-num{font-size:20px;font-weight:600;color:#1A1714;min-width:22px}
+.pdia-btn{padding:7px 13px;border-radius:20px;border:0.5px solid #DDD8CC;font-size:13px;cursor:pointer;background:#fff;color:#1A1714;margin:0 4px 6px 0}
+.pdia-btn.psel{background:#C8562A;color:#fff;border-color:#C8562A}
+.ptemp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:16px}
+.ptemp-card{border:0.5px solid #DDD8CC;border-radius:10px;padding:11px 6px;text-align:center;cursor:pointer;background:#fff}
+.ptemp-card.psel{border-color:#C8562A;background:#FDF0E8}
+.ptemp-card.psel .ptemp-nombre{color:#C8562A}
+.ptemp-icon{font-size:22px;margin-bottom:4px}
+.ptemp-nombre{font-size:13px;font-weight:600;color:#1A1714}
+.ptemp-meses{font-size:11px;color:#9B9082;margin-top:1px}
+.psemana-tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.psemana-tab{padding:4px 12px;border-radius:20px;border:0.5px solid #DDD8CC;font-size:12px;cursor:pointer;background:#fff;color:#5C5448}
+.psemana-tab.active{background:#C8562A;color:#fff;border-color:#C8562A}
+.pdias-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px;margin-bottom:12px}
+.pdia-card{background:#fff;border:0.5px solid #DDD8CC;border-radius:9px;padding:7px;cursor:pointer}
+.pdia-card:hover{border-color:#C8562A}
+.pdia-card.active{border-color:#C8562A;background:#FDF0E8}
+.pdia-card.perecible{border-left:2px solid #FFC107}
+.pdia-label{font-size:11px;color:#9B9082;font-weight:600}
+.pdia-menu{font-size:10px;color:#1A1714;line-height:1.3;margin-top:2px}
+.pseccion{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:540px){.pseccion{grid-template-columns:1fr}}
+.ppanel{background:#fff;border:0.5px solid #DDD8CC;border-radius:10px;padding:11px}
+.ppanel-title{font-size:13px;font-weight:600;color:#1A1714;margin-bottom:8px}
+.pcurso-tabs{display:flex;gap:5px;margin-bottom:7px;flex-wrap:wrap}
+.pcurso-tab{padding:4px 11px;border-radius:20px;border:0.5px solid #DDD8CC;font-size:12px;cursor:pointer;background:#FAF8F4;color:#5C5448}
+.pcurso-tab.active{background:#F0E6FF;color:#6B21A8;border-color:#C4B5FD}
+.precetas-lista,.plista-compras{display:flex;flex-direction:column;gap:5px;max-height:240px;overflow-y:auto}
+.preceta-item{background:#FAF8F4;border:0.5px solid #DDD8CC;border-radius:7px;padding:7px 9px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.preceta-item:hover{border-color:#C8562A}
+.preceta-item.pasignado{border-color:#28A745;background:#D4EDDA}
+.preceta-nombre{font-size:13px;color:#1A1714}
+.preceta-detalle{font-size:11px;color:#9B9082;margin-top:1px}
+.ping-item{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#FAF8F4;border:0.5px solid #DDD8CC;border-radius:7px}
+.ping-nombre{font-size:13px;color:#1A1714;flex:1}
+.ping-cant{font-size:12px;font-weight:600;color:#5C5448;white-space:nowrap}
+.pcarro-btn{font-size:11px;padding:4px 8px;border-radius:6px;background:#D4EDDA;color:#155724;border:0.5px solid #28A745;cursor:pointer;white-space:nowrap}
+.pcarro-btn.ok{background:#CCE5FF;color:#004085;border-color:#004085}
+.pempty{font-size:13px;color:#9B9082;text-align:center;padding:14px 0}
+.presumen{font-size:12px;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:5px}
+.ptag{padding:3px 10px;border-radius:20px;font-size:11px;border:0.5px solid #DDD8CC;background:#fff;color:#5C5448}
+.pbtn-otro{display:flex;align-items:center;gap:5px;padding:5px 13px;border-radius:20px;border:0.5px solid #DDD8CC;font-size:12px;cursor:pointer;background:#fff;color:#5C5448;margin-top:6px}
+.pagregar-otro{display:none;gap:6px;margin-top:6px}
+.pagregar-otro.visible{display:flex}
+.pagregar-otro input{flex:1;font-size:13px;padding:6px 9px;border-radius:8px;border:0.5px solid #DDD8CC;background:#FAF8F4;color:#1A1714}
+.pagregar-otro button{padding:6px 11px;border-radius:8px;background:#C8562A;color:#fff;border:none;font-size:13px;cursor:pointer}
+.pswap-mode{background:#FFF3CD;border-radius:8px;padding:7px 10px;font-size:12px;color:#856404;margin-bottom:8px;display:none}
+.pswap-mode.visible{display:block}
+.pporciones-total{font-size:12px;color:#5C5448;margin-bottom:14px;padding:7px 10px;background:#fff;border-radius:8px;border:0.5px solid #DDD8CC}
 </style>
 </head>
 <body>
+
+
+<!-- ── PLANIFICADOR DE MENÚ ── -->
+<div id="planificador-overlay">
+  <div class="plan-header">
+    <span class="plan-header-title">📅 Planificador de menú</span>
+    <button class="plan-close" onclick="cerrarPlanificador()">✕ Cerrar</button>
+  </div>
+  <div class="pstep active" id="pstep1">
+    <div class="pprog"><div class="pprog-paso done"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><span class="pprog-label">1 de 8</span></div>
+    <div class="ptitulo">Alergias e ingredientes</div>
+    <div class="psubtitulo">¿Tienes alguna alergia?</div>
+    <div class="pchips"><div class="pchip" onclick="ptoggle(this,'alergias','Gluten')">Gluten</div><div class="pchip" onclick="ptoggle(this,'alergias','Lactosa')">Lactosa</div><div class="pchip" onclick="ptoggle(this,'alergias','Mariscos')">Mariscos</div><div class="pchip" onclick="ptoggle(this,'alergias','Frutos secos')">Frutos secos</div><div class="pchip" onclick="ptoggle(this,'alergias','Huevo')">Huevo</div></div>
+    <div class="psubtitulo">¿Alimentos a evitar?</div>
+    <div class="pchips"><div class="pchip" onclick="ptoggleWarn(this,'Brócoli')">Brócoli</div><div class="pchip" onclick="ptoggleWarn(this,'Espinacas')">Espinacas</div><div class="pchip" onclick="ptoggleWarn(this,'Coliflor')">Coliflor</div><div class="pchip" onclick="ptoggleWarn(this,'Cebolla')">Cebolla</div><div class="pchip" onclick="ptoggleWarn(this,'Ajo')">Ajo</div><div class="pchip" onclick="ptoggleWarn(this,'Picante')">Picante</div><div class="pchip" onclick="ptoggleWarn(this,'Cerdo')">Cerdo</div></div>
+    <div class="pacciones"><button class="pbtn-sig" onclick="pgoStep(2)">Siguiente →</button></div>
+  </div>
+  <div class="pstep" id="pstep2">
+    <div class="pprog"><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><span class="pprog-label">2 de 8</span></div>
+    <div class="ptitulo">Tipo de alimentación</div>
+    <div class="pchips" id="pchips-dieta"><div class="pchip" onclick="ptoggleUnico(this,'dieta','Sin restricción')">Sin restricción</div><div class="pchip" onclick="ptoggleUnico(this,'dieta','Hipocalórica')">Hipocalórica</div><div class="pchip" onclick="ptoggleUnico(this,'dieta','OMS (equilibrada)')">OMS (equilibrada)</div><div class="pchip" onclick="ptoggleUnico(this,'dieta','Alta en proteína')">Alta en proteína</div><div class="pchip" onclick="ptoggleUnico(this,'dieta','Dieta blanda')">Dieta blanda</div><div class="pchip" onclick="ptoggleUnico(this,'dieta','Vegetariana')">Vegetariana</div></div>
+    <div class="pacciones"><button class="pbtn-vol" onclick="pgoStep(1)">← Volver</button><button class="pbtn-sig" onclick="pgoStep(3)">Siguiente →</button></div>
+  </div>
+  <div class="pstep" id="pstep3">
+    <div class="pprog"><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><span class="pprog-label">3 de 8</span></div>
+    <div class="ptitulo">¿Qué incluye el almuerzo?</div>
+    <div class="pchips"><div class="pchip" onclick="ptoggleCurso(this,'Sopa')">🍲 Sopa</div><div class="pchip" onclick="ptoggleCurso(this,'Ensalada')">🥗 Ensalada</div><div class="pchip" onclick="ptoggleCurso(this,'Fondo')">🍽️ Fondo</div><div class="pchip" onclick="ptoggleCurso(this,'Postre')">🍮 Postre</div></div>
+    <div class="pacciones"><button class="pbtn-vol" onclick="pgoStep(2)">← Volver</button><button class="pbtn-sig" onclick="pgoStep(4)">Siguiente →</button></div>
+  </div>
+  <div class="pstep" id="pstep4">
+    <div class="pprog"><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><span class="pprog-label">4 de 8</span></div>
+    <div class="ptitulo">¿Cuántas personas?</div>
+    <div class="psubtitulo">Un niño = media porción.</div>
+    <div class="ppersonas-grid">
+      <div class="ppersonas-card"><div style="font-size:24px;margin-bottom:4px">🧑</div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Adultos</div><div style="font-size:11px;color:#9B9082;margin-bottom:8px">Porción completa</div><div class="pcnt"><button class="pcnt-btn" onclick="pcambiar('adultos',-1)">−</button><span class="pcnt-num" id="pnum-adultos">2</span><button class="pcnt-btn" onclick="pcambiar('adultos',1)">+</button></div></div>
+      <div class="ppersonas-card"><div style="font-size:24px;margin-bottom:4px">👦</div><div style="font-size:13px;font-weight:600;margin-bottom:2px">Niños</div><div style="font-size:11px;color:#9B9082;margin-bottom:8px">Media porción</div><div class="pcnt"><button class="pcnt-btn" onclick="pcambiar('ninos',-1)">−</button><span class="pcnt-num" id="pnum-ninos">0</span><button class="pcnt-btn" onclick="pcambiar('ninos',1)">+</button></div></div>
+    </div>
+    <div class="pporciones-total" id="pporciones-total"></div>
+    <div class="pacciones"><button class="pbtn-vol" onclick="pgoStep(3)">← Volver</button><button class="pbtn-sig" onclick="pgoStep(5)">Siguiente →</button></div>
+  </div>
+  <div class="pstep" id="pstep5">
+    <div class="pprog"><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><span class="pprog-label">5 de 8</span></div>
+    <div class="ptitulo">¿Cada cuánto haces las compras?</div>
+    <div class="pnota">💡 El menú se planifica según tu ciclo de compras. La lista queda ajustada a ese período y los alimentos más perecibles se usan primero.</div>
+    <div class="pop-cards"><div class="pop-card" onclick="pselUnico(this,'semanas',1)"><div class="pop-num">1</div><div class="pop-label">semana</div></div><div class="pop-card" onclick="pselUnico(this,'semanas',2)"><div class="pop-num">2</div><div class="pop-label">semanas</div></div><div class="pop-card" onclick="pselUnico(this,'semanas',3)"><div class="pop-num">3</div><div class="pop-label">semanas</div></div><div class="pop-card" onclick="pselUnico(this,'semanas',4)"><div class="pop-num">4</div><div class="pop-label">semanas</div></div></div>
+    <div class="pacciones"><button class="pbtn-vol" onclick="pgoStep(4)">← Volver</button><button class="pbtn-sig" onclick="pgoStep(6)">Siguiente →</button></div>
+  </div>
+  <div class="pstep" id="pstep6">
+    <div class="pprog"><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso"></div><div class="pprog-paso"></div><span class="pprog-label">6 de 8</span></div>
+    <div class="ptitulo">¿Qué día haces las compras?</div>
+    <div class="psubtitulo">Desde ese día ordenamos los perecibles primero.</div>
+    <div style="display:flex;flex-wrap:wrap;margin-bottom:16px"><div class="pdia-btn" onclick="pselDiaCompra(this,'Lunes')">Lunes</div><div class="pdia-btn" onclick="pselDiaCompra(this,'Martes')">Martes</div><div class="pdia-btn" onclick="pselDiaCompra(this,'Miércoles')">Miércoles</div><div class="pdia-btn" onclick="pselDiaCompra(this,'Jueves')">Jueves</div><div class="pdia-btn" onclick="pselDiaCompra(this,'Viernes')">Viernes</div><div class="pdia-btn" onclick="pselDiaCompra(this,'Sábado')">Sábado</div></div>
+    <div class="pacciones"><button class="pbtn-vol" onclick="pgoStep(5)">← Volver</button><button class="pbtn-sig" onclick="pgoStep(7)">Siguiente →</button></div>
+  </div>
+  <div class="pstep" id="pstep7">
+    <div class="pprog"><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso"></div><span class="pprog-label">7 de 8</span></div>
+    <div class="ptitulo">¿Qué tienes en casa?</div>
+    <div class="psubtitulo">Lo excluimos de la lista de compras.</div>
+    <div class="pchips"><div class="pchip" onclick="ptoggleTiene(this,'Arroz')">Arroz</div><div class="pchip" onclick="ptoggleTiene(this,'Fideos')">Fideos</div><div class="pchip" onclick="ptoggleTiene(this,'Aceite')">Aceite</div><div class="pchip" onclick="ptoggleTiene(this,'Sal')">Sal</div><div class="pchip" onclick="ptoggleTiene(this,'Azúcar')">Azúcar</div><div class="pchip" onclick="ptoggleTiene(this,'Harina')">Harina</div><div class="pchip" onclick="ptoggleTiene(this,'Lentejas')">Lentejas</div><div class="pchip" onclick="ptoggleTiene(this,'Porotos')">Porotos</div><div class="pchip" onclick="ptoggleTiene(this,'Orégano')">Orégano</div><div class="pchip" onclick="ptoggleTiene(this,'Canela')">Canela</div><div class="pchip" onclick="ptoggleTiene(this,'Maicena')">Maicena</div><div class="pchip" onclick="ptoggleTiene(this,'Vainilla')">Vainilla</div></div>
+    <div class="pacciones"><button class="pbtn-vol" onclick="pgoStep(6)">← Volver</button><button class="pbtn-sig" onclick="pgoStep(8)">Siguiente →</button></div>
+  </div>
+  <div class="pstep" id="pstep8">
+    <div class="pprog"><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><div class="pprog-paso done"></div><span class="pprog-label">8 de 8</span></div>
+    <div class="ptitulo">¿Época del año?</div>
+    <div class="ptemp-cards"><div class="ptemp-card" onclick="pselTemp(this,'Verano')"><div class="ptemp-icon">☀️</div><div class="ptemp-nombre">Verano</div><div class="ptemp-meses">Dic — Feb</div></div><div class="ptemp-card" onclick="pselTemp(this,'Otoño')"><div class="ptemp-icon">🍂</div><div class="ptemp-nombre">Otoño</div><div class="ptemp-meses">Mar — May</div></div><div class="ptemp-card" onclick="pselTemp(this,'Invierno')"><div class="ptemp-icon">❄️</div><div class="ptemp-nombre">Invierno</div><div class="ptemp-meses">Jun — Ago</div></div><div class="ptemp-card" onclick="pselTemp(this,'Primavera')"><div class="ptemp-icon">🌸</div><div class="ptemp-nombre">Primavera</div><div class="ptemp-meses">Sep — Nov</div></div></div>
+    <div class="pacciones"><button class="pbtn-vol" onclick="pgoStep(7)">← Volver</button><button class="pbtn-sig" onclick="pgenerarPropuesta()">Ver propuesta →</button></div>
+  </div>
+  <div class="pstep" id="pstep9">
+    <div id="presumen-prefs" class="presumen"></div>
+    <div style="margin-bottom:12px"><button onclick="pexportarExcel()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:#1D6F42;color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif">📊 Descargar menú en Excel</button></div>
+    <div class="pswap-mode" id="pswap-mode"></div>
+    <div class="psemana-tabs" id="psemana-tabs"></div>
+    <div class="pdias-grid" id="pdias-grid"></div>
+    <div class="pseccion">
+      <div class="ppanel">
+        <div class="ppanel-title">🍽️ <span id="pdia-activo-label" style="color:#C8562A">Lunes</span></div>
+        <div class="pcurso-tabs" id="pcurso-tabs"></div>
+        <div id="precetas-lista" class="precetas-lista"></div>
+        <button class="pbtn-otro" onclick="ptoggleOtro()">+ Agregar otro</button>
+        <div class="pagregar-otro" id="pform-otro"><input type="text" id="pinput-otro" placeholder="Nombre del plato o fruta..."><button onclick="pconfirmarOtro()">✓</button></div>
+      </div>
+      <div class="ppanel">
+        <div class="ppanel-title">🛒 Lista de compras</div>
+        <div id="plista-compras" class="plista-compras"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ── FIN PLANIFICADOR ── -->
 
 <!-- Loading -->
 <div class="loading-screen" id="loading-screen">
@@ -206,6 +379,7 @@ textarea.form-input{min-height:72px;resize:vertical}
     <div>
       <div class="catalog-banner-title" id="banner-negocio">Mamás por Mayor</div>
       <div class="catalog-banner-sub">Elige tus productos y te enviamos el pedido por WhatsApp</div>
+    <button class="plan-btn" onclick="abrirPlanificador()">📅 Planificador de menú</button>
     </div>
   </div>
   <div class="catalog-user-pill" id="catalog-user-pill" onclick="limpiarCliente()">👤 Cliente</div>
@@ -960,6 +1134,232 @@ function showToast(msg, type='') {
 // ── INIT ────────────────────────────────────────────────
 document.getElementById('btn-tarjetas').classList.toggle('active', vistaActual === 'tarjetas');
 document.getElementById('btn-lista').classList.toggle('active', vistaActual === 'lista');
+
+// ── PLANIFICADOR DE MENÚ ──────────────────────────────────────
+const PFRUTAS_TEMP={Verano:['Sandía','Melón','Durazno','Frutilla','Ciruela','Uva'],Otoño:['Manzana','Pera','Uva','Kiwi','Plátano','Naranja'],Invierno:['Naranja','Mandarina','Kiwi','Plátano','Manzana','Pera'],Primavera:['Frutilla','Cereza','Damasco','Kiwi','Plátano','Manzana']};
+const PPERECIBLES=['Pollo','Carne de vacuno','Carne molida','Tomate','Cilantro','Apio','Palta','Frutilla','Durazno','Cereza','Plátano','Salmón','Filete de pescado'];
+const PDIAS_SEM=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const pprefs={alergias:[],evitar:[],dieta:'Sin restricción',cursos:[],adultos:2,ninos:0,semanas:1,diaCompra:'Lunes',tiene:[],temporada:''};
+let psemana={},plistaCompras={},pdiaActivo='Lunes',psemanaActiva=1,pcursoActivo='',precetasFiltradas={},ppersonalizadas={};
+let pswapOrigen=null;
+
+function abrirPlanificador(){document.getElementById('planificador-overlay').classList.add('visible');document.body.style.overflow='hidden';}
+function cerrarPlanificador(){document.getElementById('planificador-overlay').classList.remove('visible');document.body.style.overflow='';}
+function pporciones(){return pprefs.adultos+pprefs.ninos*0.5;}
+function pactualizarTotal(){document.getElementById('pporciones-total').textContent=`Total: ${pporciones()} porciones — ${pprefs.adultos} adulto${pprefs.adultos!==1?'s':''} + ${pprefs.ninos} niño${pprefs.ninos!==1?'s':''}`;}
+function pcambiar(t,d){if(t==='adultos'){pprefs.adultos=Math.max(1,pprefs.adultos+d);document.getElementById('pnum-adultos').textContent=pprefs.adultos;}else{pprefs.ninos=Math.max(0,pprefs.ninos+d);document.getElementById('pnum-ninos').textContent=pprefs.ninos;}pactualizarTotal();}
+pactualizarTotal();
+function ptoggle(el,cat,val){const i=pprefs[cat].indexOf(val);if(i>=0){pprefs[cat].splice(i,1);el.classList.remove('psel')}else{pprefs[cat].push(val);el.classList.add('psel')}}
+function ptoggleWarn(el,val){const i=pprefs.evitar.indexOf(val);if(i>=0){pprefs.evitar.splice(i,1);el.classList.remove('psel-warn')}else{pprefs.evitar.push(val);el.classList.add('psel-warn')}}
+function ptoggleUnico(el,cat,val){document.querySelectorAll('#pchips-dieta .pchip').forEach(c=>c.classList.remove('psel'));pprefs[cat]=val;el.classList.add('psel')}
+function ptoggleCurso(el,val){const i=pprefs.cursos.indexOf(val);if(i>=0){pprefs.cursos.splice(i,1);el.classList.remove('psel')}else{pprefs.cursos.push(val);el.classList.add('psel')}}
+function ptoggleTiene(el,val){const i=pprefs.tiene.indexOf(val);if(i>=0){pprefs.tiene.splice(i,1);el.classList.remove('psel-tiene')}else{pprefs.tiene.push(val);el.classList.add('psel-tiene')}}
+function pselUnico(el,cat,val){el.closest('.pop-cards').querySelectorAll('.pop-card').forEach(c=>c.classList.remove('psel'));pprefs[cat]=val;el.classList.add('psel')}
+function pselDiaCompra(el,val){document.querySelectorAll('.pdia-btn').forEach(c=>c.classList.remove('psel'));pprefs.diaCompra=val;el.classList.add('psel')}
+function pselTemp(el,t){document.querySelectorAll('.ptemp-card').forEach(c=>c.classList.remove('psel'));pprefs.temporada=t;el.classList.add('psel')}
+function pgoStep(n){document.querySelectorAll('.pstep').forEach(s=>s.classList.remove('active'));document.getElementById('pstep'+n).classList.add('active');}
+
+const PTODAS={
+  Sopa:[
+    {nombre:'Sopa de pollo',tiempo:'50min',perecible:true,temp:['Otoño','Invierno','Primavera'],dietas:['Sin restricción','Dieta blanda','OMS (equilibrada)','Hipocalórica'],base:4,ingredientes:[{n:'Pollo',c:'1 kg'},{n:'Papa',c:'3 unid'},{n:'Zanahoria',c:'2 unid'},{n:'Apio',c:'1 tallo'},{n:'Fideos',c:'100 g'}]},
+    {nombre:'Sopa de verduras',tiempo:'40min',perecible:false,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción','Hipocalórica','Vegetariana','OMS (equilibrada)','Dieta blanda'],base:4,ingredientes:[{n:'Zapallo',c:'200 g'},{n:'Zanahoria',c:'2 unid'},{n:'Papa',c:'2 unid'},{n:'Apio',c:'1 tallo'},{n:'Cebolla',c:'1 unid'}]},
+    {nombre:'Cazuela de vacuno',tiempo:'1h 20min',perecible:true,temp:['Otoño','Invierno'],dietas:['Sin restricción','OMS (equilibrada)','Alta en proteína'],base:4,ingredientes:[{n:'Carne de vacuno',c:'500 g'},{n:'Papa',c:'4 unid'},{n:'Zapallo',c:'200 g'},{n:'Choclo',c:'2 unid'},{n:'Cebolla',c:'1 unid'}]},
+    {nombre:'Gazpacho',tiempo:'20min',perecible:true,temp:['Verano','Primavera'],dietas:['Sin restricción','Hipocalórica','Vegetariana'],base:4,ingredientes:[{n:'Tomate',c:'6 unid'},{n:'Pepino',c:'1 unid'},{n:'Pimiento',c:'1 unid'},{n:'Limón',c:'1 unid'}]},
+    {nombre:'Cazuela de pollo',tiempo:'1h',perecible:true,temp:['Otoño','Invierno'],dietas:['Sin restricción','Dieta blanda','OMS (equilibrada)'],base:4,ingredientes:[{n:'Pollo',c:'1 kg'},{n:'Papa',c:'4 unid'},{n:'Zapallo',c:'200 g'},{n:'Choclo',c:'1 unid'},{n:'Cebolla',c:'1 unid'}]},
+  ],
+  Ensalada:[
+    {nombre:'Ensalada chilena',tiempo:'10min',perecible:true,temp:['Verano','Primavera','Otoño','Invierno'],dietas:['Sin restricción','Hipocalórica','Vegetariana','OMS (equilibrada)'],base:4,ingredientes:[{n:'Tomate',c:'3 unid'},{n:'Cebolla',c:'1 unid'},{n:'Cilantro',c:'1 atado'},{n:'Limón',c:'1 unid'}]},
+    {nombre:'Ensalada de palta',tiempo:'10min',perecible:true,temp:['Verano','Primavera'],dietas:['Sin restricción','Hipocalórica','Vegetariana','OMS (equilibrada)'],base:4,ingredientes:[{n:'Palta',c:'2 unid'},{n:'Tomate',c:'2 unid'},{n:'Limón',c:'1 unid'}]},
+    {nombre:'Ensalada de betarraga',tiempo:'15min',perecible:false,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción','Hipocalórica','Vegetariana','OMS (equilibrada)'],base:4,ingredientes:[{n:'Betarraga',c:'3 unid'},{n:'Limón',c:'1 unid'}]},
+    {nombre:'Ensalada de zanahoria',tiempo:'10min',perecible:false,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción','Hipocalórica','Vegetariana','Dieta blanda'],base:4,ingredientes:[{n:'Zanahoria',c:'3 unid'},{n:'Limón',c:'1 unid'}]},
+    {nombre:'Ensalada de porotos verdes',tiempo:'15min',perecible:true,temp:['Verano','Primavera'],dietas:['Sin restricción','Hipocalórica','Vegetariana','OMS (equilibrada)'],base:4,ingredientes:[{n:'Porotos verdes',c:'400 g'},{n:'Limón',c:'1 unid'},{n:'Aceite',c:'2 cdas'}]},
+  ],
+  Fondo:[
+    {nombre:'Pastel de choclo',tiempo:'1h 30min',perecible:true,temp:['Verano','Primavera'],dietas:['Sin restricción','OMS (equilibrada)'],base:6,ingredientes:[{n:'Choclo',c:'6 unid'},{n:'Carne molida',c:'400 g'},{n:'Pollo',c:'250 g'},{n:'Cebolla',c:'2 unid'},{n:'Huevo',c:'2 unid'}]},
+    {nombre:'Pollo al horno',tiempo:'1h 10min',perecible:true,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción','Alta en proteína','Hipocalórica','Dieta blanda'],base:4,ingredientes:[{n:'Pollo',c:'1.5 kg'},{n:'Papa',c:'4 unid'},{n:'Limón',c:'2 unid'},{n:'Ajo',c:'3 dientes'}]},
+    {nombre:'Porotos con riendas',tiempo:'1h 30min',perecible:false,temp:['Otoño','Invierno'],dietas:['Sin restricción','OMS (equilibrada)','Hipocalórica'],base:6,ingredientes:[{n:'Porotos',c:'500 g'},{n:'Tallarines',c:'200 g'},{n:'Longaniza',c:'2 unid'},{n:'Cebolla',c:'1 unid'}]},
+    {nombre:'Lentejas guisadas',tiempo:'1h',perecible:false,temp:['Otoño','Invierno','Primavera'],dietas:['Sin restricción','OMS (equilibrada)','Hipocalórica','Vegetariana'],base:6,ingredientes:[{n:'Lentejas',c:'500 g'},{n:'Cebolla',c:'1 unid'},{n:'Zanahoria',c:'2 unid'},{n:'Tomate',c:'2 unid'}]},
+    {nombre:'Empanadas al horno',tiempo:'1h 30min',perecible:true,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción'],base:4,ingredientes:[{n:'Harina',c:'500 g'},{n:'Carne molida',c:'400 g'},{n:'Cebolla',c:'2 unid'},{n:'Huevo',c:'3 unid'},{n:'Aceituna',c:'50 g'}]},
+    {nombre:'Arroz con verduras',tiempo:'30min',perecible:false,temp:['Verano','Primavera'],dietas:['Sin restricción','Hipocalórica','Dieta blanda','Vegetariana','OMS (equilibrada)'],base:4,ingredientes:[{n:'Arroz',c:'300 g'},{n:'Zanahoria',c:'2 unid'},{n:'Arvejas',c:'100 g'},{n:'Choclo',c:'1 unid'}]},
+    {nombre:'Estofado de carne',tiempo:'1h',perecible:true,temp:['Otoño','Invierno'],dietas:['Sin restricción','Alta en proteína'],base:4,ingredientes:[{n:'Carne de vacuno',c:'600 g'},{n:'Papa',c:'4 unid'},{n:'Zanahoria',c:'2 unid'},{n:'Tomate',c:'2 unid'}]},
+    {nombre:'Carbonada',tiempo:'1h 10min',perecible:true,temp:['Verano','Primavera'],dietas:['Sin restricción','OMS (equilibrada)'],base:4,ingredientes:[{n:'Carne de vacuno',c:'500 g'},{n:'Papa',c:'3 unid'},{n:'Zapallo',c:'200 g'},{n:'Choclo',c:'1 unid'},{n:'Durazno',c:'2 unid'}]},
+    {nombre:'Tallarines con salsa',tiempo:'40min',perecible:false,temp:['Verano','Primavera','Otoño','Invierno'],dietas:['Sin restricción','Hipocalórica','Vegetariana'],base:4,ingredientes:[{n:'Tallarines',c:'400 g'},{n:'Tomate',c:'4 unid'},{n:'Cebolla',c:'1 unid'},{n:'Ajo',c:'2 dientes'}]},
+    {nombre:'Pollo guisado',tiempo:'1h',perecible:true,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción','Alta en proteína','OMS (equilibrada)'],base:4,ingredientes:[{n:'Pollo',c:'1 kg'},{n:'Papa',c:'4 unid'},{n:'Zanahoria',c:'2 unid'},{n:'Cebolla',c:'1 unid'}]},
+    {nombre:'Arroz con pollo',tiempo:'50min',perecible:true,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción','Alta en proteína','OMS (equilibrada)'],base:4,ingredientes:[{n:'Pollo',c:'800 g'},{n:'Arroz',c:'300 g'},{n:'Cebolla',c:'1 unid'},{n:'Pimiento',c:'1 unid'}]},
+    {nombre:'Pescado al horno',tiempo:'40min',perecible:true,temp:['Verano','Primavera','Otoño','Invierno'],dietas:['Sin restricción','Alta en proteína','Hipocalórica','OMS (equilibrada)'],base:4,ingredientes:[{n:'Filete de pescado',c:'600 g'},{n:'Limón',c:'2 unid'},{n:'Papa',c:'4 unid'},{n:'Tomate',c:'2 unid'}]},
+    {nombre:'Garbanzos guisados',tiempo:'1h',perecible:false,temp:['Otoño','Invierno','Primavera'],dietas:['Sin restricción','OMS (equilibrada)','Hipocalórica','Vegetariana'],base:6,ingredientes:[{n:'Garbanzos',c:'500 g'},{n:'Cebolla',c:'1 unid'},{n:'Zanahoria',c:'2 unid'},{n:'Tomate',c:'2 unid'}]},
+    {nombre:'Carne mechada',tiempo:'1h 30min',perecible:true,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción','Alta en proteína'],base:6,ingredientes:[{n:'Carne de vacuno',c:'800 g'},{n:'Cebolla',c:'2 unid'},{n:'Zanahoria',c:'2 unid'},{n:'Ajo',c:'3 dientes'}]},
+    {nombre:'Puré con huevo',tiempo:'30min',perecible:false,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción','Dieta blanda','Hipocalórica'],base:4,ingredientes:[{n:'Papa',c:'6 unid'},{n:'Leche',c:'200 ml'},{n:'Mantequilla',c:'30 g'},{n:'Huevo',c:'4 unid'}]},
+    {nombre:'Tortilla de verduras',tiempo:'30min',perecible:true,temp:['Verano','Primavera','Otoño','Invierno'],dietas:['Sin restricción','Vegetariana','Hipocalórica'],base:4,ingredientes:[{n:'Huevo',c:'6 unid'},{n:'Zanahoria',c:'1 unid'},{n:'Pimiento',c:'1 unid'},{n:'Cebolla',c:'1 unid'}]},
+    {nombre:'Salmón al limón',tiempo:'30min',perecible:true,temp:['Verano','Primavera','Otoño','Invierno'],dietas:['Sin restricción','Alta en proteína','Hipocalórica','OMS (equilibrada)'],base:4,ingredientes:[{n:'Salmón',c:'600 g'},{n:'Limón',c:'2 unid'},{n:'Ajo',c:'2 dientes'},{n:'Papa',c:'4 unid'}]},
+    {nombre:'Albóndigas en salsa',tiempo:'1h',perecible:true,temp:['Otoño','Invierno','Primavera','Verano'],dietas:['Sin restricción','Alta en proteína'],base:4,ingredientes:[{n:'Carne molida',c:'500 g'},{n:'Huevo',c:'2 unid'},{n:'Tomate',c:'4 unid'},{n:'Cebolla',c:'1 unid'}]},
+    {nombre:'Tallarines con carne',tiempo:'50min',perecible:true,temp:['Verano','Primavera','Otoño','Invierno'],dietas:['Sin restricción','Alta en proteína'],base:4,ingredientes:[{n:'Tallarines',c:'400 g'},{n:'Carne molida',c:'300 g'},{n:'Tomate',c:'3 unid'},{n:'Cebolla',c:'1 unid'}]},
+  ],
+  Postre:[
+    {nombre:'Arroz con leche',tiempo:'40min',perecible:false,temp:['Otoño','Invierno'],dietas:['Sin restricción','Dieta blanda'],base:6,ingredientes:[{n:'Arroz',c:'200 g'},{n:'Leche',c:'1 litro'},{n:'Azúcar',c:'100 g'},{n:'Canela',c:'1 ramita'}]},
+    {nombre:'Leche asada',tiempo:'45min',perecible:false,temp:['Otoño','Invierno','Primavera'],dietas:['Sin restricción','Dieta blanda','Hipocalórica'],base:6,ingredientes:[{n:'Leche',c:'1 litro'},{n:'Huevo',c:'4 unid'},{n:'Azúcar',c:'80 g'},{n:'Vainilla',c:'1 cdta'}]},
+    {nombre:'Leche con sémola',tiempo:'20min',perecible:false,temp:['Otoño','Invierno'],dietas:['Sin restricción','Dieta blanda'],base:4,ingredientes:[{n:'Leche',c:'1 litro'},{n:'Sémola',c:'80 g'},{n:'Azúcar',c:'60 g'}]},
+    {nombre:'Helado',tiempo:'5min',perecible:false,temp:['Verano','Primavera'],dietas:['Sin restricción','Hipocalórica'],base:4,ingredientes:[{n:'Helado',c:'500 g'}]},
+    {nombre:'Tuttifruti',tiempo:'30min',perecible:false,temp:['Verano','Primavera','Otoño'],dietas:['Sin restricción'],base:6,ingredientes:[{n:'Leche',c:'1 litro'},{n:'Azúcar',c:'80 g'},{n:'Maicena',c:'50 g'},{n:'Fruta en conserva',c:'1 lata'}]},
+    {nombre:'Plátano con manjar',tiempo:'5min',perecible:true,temp:['Verano','Primavera','Otoño','Invierno'],dietas:['Sin restricción','Dieta blanda'],base:4,ingredientes:[{n:'Plátano',c:'4 unid'},{n:'Manjar',c:'200 g'}]},
+    {nombre:'Ensalada de frutas',tiempo:'15min',perecible:true,temp:['Verano','Primavera'],dietas:['Sin restricción','Hipocalórica','Vegetariana','OMS (equilibrada)'],base:4,ingredientes:[{n:'Melón',c:'0.5 unid'},{n:'Sandía',c:'0.25 unid'},{n:'Uva',c:'200 g'}]},
+  ],
+};
+
+function pgetFrutasTemp(){return pprefs.temporada?PFRUTAS_TEMP[pprefs.temporada]:['Manzana','Pera','Plátano'];}
+function pbuildRecetasFruta(){return pgetFrutasTemp().map(f=>({nombre:f,tiempo:'5min',esFruta:true,perecible:true,temp:['Verano','Primavera','Otoño','Invierno'],dietas:['Sin restricción','Hipocalórica','Vegetariana','OMS (equilibrada)','Dieta blanda','Alta en proteína'],base:4,ingredientes:[{n:f,c:`${Math.ceil(pporciones())} unid`}]}));}
+function pfiltrar(lista){return lista.filter(r=>{if(pprefs.temporada&&r.temp&&!r.temp.includes(pprefs.temporada))return false;if(pprefs.dieta!=='Sin restricción'&&!r.dietas.includes(pprefs.dieta))return false;for(const al of pprefs.alergias)if(r.ingredientes.some(i=>i.n.toLowerCase().includes(al.toLowerCase())))return false;return true;});}
+function pdiasDelCiclo(){const totalDias=pprefs.semanas*7;const inicio=PDIAS_SEM.indexOf(pprefs.diaCompra);const dias=[];for(let i=0;i<totalDias;i++){const semIdx=Math.floor(i/7)+1;const diaIdx=(inicio+i)%7;dias.push({sem:semIdx,dia:PDIAS_SEM[diaIdx],orden:i});}return dias;}
+function pesPerecibleDia(orden){return orden<3;}
+
+function pgenerarPropuesta(){
+  if(!pprefs.cursos.length)pprefs.cursos.push('Fondo');
+  pcursoActivo=pprefs.cursos[0];psemanaActiva=1;
+  ppersonalizadas={Sopa:[],Ensalada:[],Fondo:[],Postre:[]};precetasFiltradas={};
+  pprefs.cursos.forEach(c=>{let base=[...(PTODAS[c]||[])];if(c==='Postre')base=[...base,...pbuildRecetasFruta()];const f=pfiltrar(base);precetasFiltradas[c]=f.length?f:base;});
+  psemana={};const dias=pdiasDelCiclo();const usados={};
+  dias.forEach(({sem,dia,orden})=>{
+    const k=`s${sem}_${dia}`;psemana[k]={};const perecible=pesPerecibleDia(orden);
+    pprefs.cursos.forEach(c=>{
+      const pool=[...precetasFiltradas[c]];
+      pool.sort((a,b)=>{const ap=perecible?(a.perecible?-1:1):(a.perecible?1:-1);const bp=perecible?(b.perecible?-1:1):(b.perecible?1:-1);return ap-bp;});
+      const prevOrden=orden-1;const prevDia=prevOrden>=0?PDIAS_SEM[(PDIAS_SEM.indexOf(pprefs.diaCompra)+prevOrden)%7]:'';const prevSem=prevOrden>=0?Math.floor(prevOrden/7)+1:0;const prevKey=prevDia?`s${prevSem}_${prevDia}`:'';
+      const prevNombre=prevKey&&psemana[prevKey]&&psemana[prevKey][c]?psemana[prevKey][c].nombre:'';
+      const candidatos=pool.filter(r=>r.nombre!==prevNombre);const fuente=candidatos.length?candidatos:pool;
+      if(!usados[c])usados[c]=[];let elegido=fuente.find(r=>!usados[c].includes(r.nombre));if(!elegido){usados[c]=[];elegido=fuente[0];}
+      if(elegido){psemana[k][c]=elegido;usados[c].push(elegido.nombre);}
+    });
+  });
+  pdiaActivo=pprefs.diaCompra;
+  prenderResumen();prenderSemanaTabs();prenderDias();prenderCursoTabs();prenderRecetas();precalcLista();prenderLista();pgoStep(9);
+}
+
+function prenderResumen(){
+  const el=document.getElementById('presumen-prefs');
+  const temp=pprefs.temporada?`<span class="ptag" style="background:#FFF3CD;color:#856404;border-color:#FFC107">${pprefs.temporada}</span>`:'';
+  let t=`<span class="ptag" style="background:#D4EDDA;color:#155724;border-color:#28A745">${pprefs.dieta}</span>${temp}`;
+  t+=`<span class="ptag">Compra cada ${pprefs.semanas} sem. — ${pprefs.diaCompra}</span>`;
+  t+=`<span class="ptag">${pprefs.adultos}A + ${pprefs.ninos}N</span>`;
+  pprefs.cursos.forEach(c=>t+=`<span class="ptag" style="background:#F0E6FF;color:#6B21A8;border-color:#C4B5FD">${c}</span>`);
+  el.innerHTML=t;
+}
+function prenderSemanaTabs(){const el=document.getElementById('psemana-tabs');if(pprefs.semanas===1){el.innerHTML='';return;}el.innerHTML=Array.from({length:pprefs.semanas},(_,i)=>`<div class="psemana-tab${i+1===psemanaActiva?' active':''}" onclick="pselSemanaActiva(${i+1})">Semana ${i+1}</div>`).join('');}
+function pselSemanaActiva(n){psemanaActiva=n;pdiaActivo=pprefs.diaCompra;document.getElementById('pdia-activo-label').textContent=pprefs.diaCompra;prenderSemanaTabs();prenderDias();prenderCursoTabs();prenderRecetas();}
+function pkeyDia(d){return `s${psemanaActiva}_${d}`;}
+function pordenDia(d){const inicio=PDIAS_SEM.indexOf(pprefs.diaCompra);const idx=PDIAS_SEM.indexOf(d);return((idx-inicio)+7)%7;}
+
+function prenderDias(){
+  const g=document.getElementById('pdias-grid');
+  const inicio=PDIAS_SEM.indexOf(pprefs.diaCompra);
+  const diasOrdenados=PDIAS_SEM.slice(inicio).concat(PDIAS_SEM.slice(0,inicio));
+  g.innerHTML=diasOrdenados.map(d=>{
+    const k=pkeyDia(d);const ord=pordenDia(d);const perecible=pesPerecibleDia(ord);
+    const swapSel=pswapOrigen&&pswapOrigen===k;
+    const menuLines=pprefs.cursos.filter(c=>psemana[k]&&psemana[k][c]).map(c=>{
+      const nombre=psemana[k][c].nombre;
+      const short=nombre.length>18?nombre.substring(0,16)+'…':nombre;
+      return `<div class="pdia-menu">${short}</div>`;
+    }).join('');
+    return `<div class="pdia-card${d===pdiaActivo?' active':''}${perecible?' perecible':''}${swapSel?' active':''}" onclick="pclickDia('${d}','${k}')">
+      <div class="pdia-label">${d}${d===pprefs.diaCompra&&psemanaActiva===1?' 🛒':''}</div>
+      <div style="margin-top:3px">${menuLines||'<span style="font-size:11px;color:#9B9082">—</span>'}</div>
+      ${perecible?'<div style="font-size:10px;color:#856404;margin-top:2px">🌿 usar pronto</div>':''}
+    </div>`;}).join('');
+}
+
+function pclickDia(d,k){
+  if(pswapOrigen){
+    if(pswapOrigen!==k){const tmp={...psemana[pswapOrigen]};psemana[pswapOrigen]={...psemana[k]};psemana[k]=tmp;pswapOrigen=null;document.getElementById('pswap-mode').classList.remove('visible');}
+    else{pswapOrigen=null;document.getElementById('pswap-mode').classList.remove('visible');}
+    prenderDias();precalcLista();prenderLista();
+  }
+  pdiaActivo=d;document.getElementById('pdia-activo-label').textContent=d;prenderDias();prenderCursoTabs();prenderRecetas();
+}
+function piniciarSwap(k){pswapOrigen=k;document.getElementById('pswap-mode').classList.add('visible');document.getElementById('pswap-mode').textContent='Toca otro día para intercambiar. Toca el mismo para cancelar.';}
+function prenderCursoTabs(){const el=document.getElementById('pcurso-tabs');el.innerHTML=pprefs.cursos.map(c=>`<div class="pcurso-tab${c===pcursoActivo?' active':''}" onclick="pselCurso('${c}')">${c}</div>`).join('');}
+function pselCurso(c){pcursoActivo=c;prenderCursoTabs();prenderRecetas();}
+function ptieneEvitados(r){return r.ingredientes.filter(i=>pprefs.evitar.some(e=>i.n.toLowerCase().includes(e.toLowerCase())))}
+
+function prenderRecetas(){
+  const el=document.getElementById('precetas-lista');const k=pkeyDia(pdiaActivo);
+  const lista=precetasFiltradas[pcursoActivo]||[];const asignadoNombre=psemana[k]&&psemana[k][pcursoActivo]?psemana[k][pcursoActivo].nombre:'';
+  let html=lista.map(r=>{
+    const ev=ptieneEvitados(r);const esSel=r.nombre===asignadoNombre;
+    const badge=r.esFruta?'<span style="font-size:10px;padding:1px 5px;border-radius:8px;background:#D4EDDA;color:#155724;border:0.5px solid #28A745;margin-left:4px">fruta</span>':r.esPersonalizado?'<span style="font-size:10px;padding:1px 5px;border-radius:8px;background:#FFF3CD;color:#856404;border:0.5px solid #FFC107;margin-left:4px">personalizado</span>':'';
+    return `<div class="preceta-item${esSel?' pasignado':''}" onclick="pasignarReceta('${r.nombre.replace(/'/g,"\\'")}')">
+      <div style="flex:1"><div class="preceta-nombre">${r.nombre}${badge}</div><div class="preceta-detalle">⏱ ${r.tiempo}</div>${ev.length?`<div style="font-size:11px;color:#856404;margin-top:1px">⚠️ ${ev.map(e=>e.n).join(', ')}</div>`:''}</div>
+      <div style="font-size:18px;color:${esSel?'#28A745':'#C8562A'};flex-shrink:0">${esSel?'✓':'+'}</div>
+    </div>`;}).join('');
+  if(asignadoNombre)html='<button style="font-size:11px;padding:4px 10px;border-radius:6px;background:#FFF3CD;color:#856404;border:0.5px solid #FFC107;cursor:pointer;margin-bottom:6px" onclick="piniciarSwap(\''+pkeyDia(pdiaActivo)+'\')">⇄ Intercambiar este día</button>'+html;
+  el.innerHTML=html;
+}
+
+function pasignarReceta(nombre){
+  const k=pkeyDia(pdiaActivo);if(!psemana[k])psemana[k]={};
+  const r=(precetasFiltradas[pcursoActivo]||[]).find(x=>x.nombre===nombre);if(!r)return;
+  if(psemana[k][pcursoActivo]&&psemana[k][pcursoActivo].nombre===nombre)delete psemana[k][pcursoActivo];else psemana[k][pcursoActivo]=r;
+  precalcLista();prenderDias();prenderRecetas();prenderLista();
+}
+function ptoggleOtro(){const f=document.getElementById('pform-otro');f.classList.toggle('visible');if(f.classList.contains('visible'))document.getElementById('pinput-otro').focus();}
+function pconfirmarOtro(){
+  const inp=document.getElementById('pinput-otro');const val=inp.value.trim();if(!val)return;
+  const nombre=val.charAt(0).toUpperCase()+val.slice(1);const cat=pcursoActivo||'Fondo';
+  if(!ppersonalizadas[cat])ppersonalizadas[cat]=[];
+  if(!ppersonalizadas[cat].find(r=>r.nombre===nombre)){const nr={nombre,tiempo:'—',esPersonalizado:true,esFruta:cat==='Postre',perecible:true,temp:['Verano','Primavera','Otoño','Invierno'],dietas:['Sin restricción','Hipocalórica','Vegetariana','OMS (equilibrada)','Dieta blanda','Alta en proteína'],base:4,ingredientes:[{n:nombre,c:cat==='Postre'?`${Math.ceil(pporciones())} unid`:'al gusto'}]};ppersonalizadas[cat].push(nr);precetasFiltradas[cat]=[...precetasFiltradas[cat],nr];}
+  inp.value='';document.getElementById('pform-otro').classList.remove('visible');prenderRecetas();
+}
+function pescalarCantidad(c,factor){if(!c||c==='al gusto')return c||'al gusto';const m=c.match(/^([\d.\/]+)\s*(.*)/);if(!m)return c;const num=eval(m[1]);const unidad=m[2].trim();const s=num*factor;const r=(!unidad||unidad.match(/^unid/))?Math.ceil(s):Math.round(s*10)/10;return `${r}${unidad?' '+unidad:''}`;}
+function precalcLista(){
+  plistaCompras={};const p=pporciones();
+  Object.values(psemana).forEach(cursos=>Object.values(cursos).forEach(r=>{
+    const factor=p/r.base;
+    r.ingredientes.forEach(ing=>{if(pprefs.tiene.includes(ing.n))return;if(!plistaCompras[ing.n])plistaCompras[ing.n]={cantEscalada:pescalarCantidad(ing.c,factor),agregado:false,perecible:PPERECIBLES.includes(ing.n)};});
+  }));
+}
+function prenderLista(){
+  const el=document.getElementById('plista-compras');const keys=Object.keys(plistaCompras);
+  if(!keys.length){el.innerHTML='<div class="pempty">Sin ingredientes aún</div>';return;}
+  const sorted=[...keys].sort((a,b)=>(plistaCompras[b].perecible?1:0)-(plistaCompras[a].perecible?1:0));
+  el.innerHTML=sorted.map(k=>`<div class="ping-item">
+    <span class="ping-nombre">${k}${plistaCompras[k].perecible?' 🌿':''}</span>
+    <span class="ping-cant">${plistaCompras[k].cantEscalada}</span>
+    <button class="pcarro-btn${plistaCompras[k].agregado?' ok':''}" onclick="ptoggleCarrito('${k}')">${plistaCompras[k].agregado?'✓ Listo':'+ Carro'}</button>
+  </div>`).join('');
+}
+function ptoggleCarrito(k){plistaCompras[k].agregado=!plistaCompras[k].agregado;prenderLista();}
+
+function pexportarExcel(){
+  const inicio=PDIAS_SEM.indexOf(pprefs.diaCompra);
+  const diasOrdenados=PDIAS_SEM.slice(inicio).concat(PDIAS_SEM.slice(0,inicio));
+  let menuRows='';
+  for(let s=1;s<=pprefs.semanas;s++){
+    diasOrdenados.forEach(d=>{
+      const k=`s${s}_${d}`;
+      const sopa=psemana[k]&&psemana[k]['Sopa']?psemana[k]['Sopa'].nombre:'—';
+      const ensalada=psemana[k]&&psemana[k]['Ensalada']?psemana[k]['Ensalada'].nombre:'—';
+      const fondo=psemana[k]&&psemana[k]['Fondo']?psemana[k]['Fondo'].nombre:'—';
+      const postre=psemana[k]&&psemana[k]['Postre']?psemana[k]['Postre'].nombre:'—';
+      const perecible=diasOrdenados.indexOf(d)<3;
+      menuRows+=`<tr><td>Semana ${s}</td><td>${d}${perecible?' 🌿':''}</td><td>${sopa}</td><td>${ensalada}</td><td>${fondo}</td><td>${postre}</td></tr>`;
+    });
+  }
+  const keys=Object.keys(plistaCompras).sort((a,b)=>(plistaCompras[b].perecible?1:0)-(plistaCompras[a].perecible?1:0));
+  let listaRows=keys.map(k=>`<tr><td>${k}${plistaCompras[k].perecible?' 🌿':''}</td><td>${plistaCompras[k].cantEscalada}</td><td>${plistaCompras[k].perecible?'Sí':'No'}</td></tr>`).join('');
+  const wb=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel'><head><meta charset='utf-8'><style>th{background:#C8562A;color:#fff;font-family:Calibri;font-size:11pt;padding:6px;border:1px solid #aaa}td{font-family:Calibri;font-size:10pt;padding:5px;border:1px solid #ddd}tr:nth-child(even) td{background:#FFF5F0}</style></head><body>
+<h2 style="font-family:Calibri;color:#C8562A">Menú — Mamás por Mayor</h2>
+<p style="font-family:Calibri;font-size:10pt;color:#666">Dieta: ${pprefs.dieta} | ${pprefs.adultos} adultos + ${pprefs.ninos} niños | ${pprefs.temporada}</p>
+<h3 style="font-family:Calibri;color:#C8562A;margin-top:14px">Planificación</h3>
+<table><tr><th>Semana</th><th>Día</th><th>Sopa</th><th>Ensalada</th><th>Fondo</th><th>Postre</th></tr>${menuRows}</table>
+<h3 style="font-family:Calibri;color:#C8562A;margin-top:20px">Lista de compras</h3>
+<p style="font-family:Calibri;font-size:10pt;color:#666">🌿 = perecible, usar primero</p>
+<table><tr><th>Ingrediente</th><th>Cantidad</th><th>Perecible</th></tr>${listaRows}</table>
+</body></html>`;
+  const blob=new Blob([wb],{type:'application/vnd.ms-excel;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='menu_mamaspormayor.xls';a.click();URL.revokeObjectURL(url);
+}
+// ── FIN PLANIFICADOR ──────────────────────────────────────────
+
 cargarDatos();
 </script>
 </body>
