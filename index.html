@@ -4207,8 +4207,15 @@ function renderHistorial(){
 
   // Stats
   const totalV=hist.reduce((s,p)=>s+p.total,0);
-  const totalG=hist.reduce((s,p)=>s+(p.ganancia||0),0);
-  const totalC=hist.reduce((s,p)=>s+(p.costo||0),0);
+  const totalC=hist.reduce((s,p)=>{
+    if(p.costo&&p.costo>0) return s+p.costo;
+    return s+p.items.reduce((si,i)=>si+(i.qty||0)*(i.costo||0),0);
+  },0);
+  const totalG=hist.reduce((s,p)=>{
+    if(p.ganancia!=null&&p.ganancia>0) return s+p.ganancia;
+    const costo=p.costo&&p.costo>0?p.costo:p.items.reduce((si,i)=>si+(i.qty||0)*(i.costo||0),0);
+    return s+(p.total-costo);
+  },0);
   document.getElementById('stats-historial').innerHTML=`
     <div class="stat"><div class="stat-label">Ventas archivadas</div><div class="stat-value">${hist.length}</div><div class="stat-sub">Pedidos pagados</div></div>
     <div class="stat"><div class="stat-label">Ingresos totales</div><div class="stat-value">${fmt(totalV)}</div><div class="stat-sub">Acumulado histórico</div></div>
@@ -4258,7 +4265,11 @@ function renderHistorial(){
       <div class="pedido-footer">
         <div>
           <div class="pedido-total">${fmt(p.total)}</div>
-          <div style="font-size:12px;color:var(--green);margin-top:2px">Ganancia: ${fmt(p.ganancia||0)}</div>
+          <div style="font-size:12px;color:var(--green);margin-top:2px">Ganancia: ${(()=>{
+            if(p.ganancia!=null&&p.ganancia>0) return fmt(p.ganancia);
+            const c=p.costo&&p.costo>0?p.costo:p.items.reduce((s,i)=>s+(i.qty||0)*(i.costo||0),0);
+            return fmt(p.total-c);
+          })()}</div>
         </div>
         <div class="pedido-actions">
           <button class="btn btn-ghost btn-sm" onclick="desarchivarPedido('${p.id}')">↩ Desarchivar</button>
